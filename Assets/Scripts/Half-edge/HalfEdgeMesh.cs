@@ -60,6 +60,45 @@ public class HalfEdgeMesh
         return face;
     }
 
+    public HEFace SelectRandomFace()
+    {
+        if (faces.Count == 0) return null;
+        int randomIndex = Random.Range(0, faces.Count);
+        HEFace selectedFace = faces[randomIndex];
+        return selectedFace;
+    }
+
+    public List<HEHalfEdge> VerticesOfFace(HEFace face){
+        if (face == null) return null;
+        HEHalfEdge edge = face.edge;
+        HEHalfEdge firstEdge = edge;
+        List<HEHalfEdge> edges = new List<HEHalfEdge>();
+        do
+        {
+            edges.Add(edge);
+            edge = edge.next;
+        } while (edge != firstEdge);
+        return edges; 
+    }
+
+    public string EdgeToString(HEHalfEdge edge)
+    {
+        if (edge == null) return "null"; // Watch out that the first vertex is not the origin of the edge
+        return $"{VertexToString(edge.vertex)} -> {VertexToString(edge.next.vertex)}";
+    }
+
+    public string VertexToString(HEVertex vertex)
+    {
+        if (vertex == null) return "null";
+        return $"{vertex.position}";
+    }
+
+    public string FaceToString(HEFace face)
+    {
+        if (face == null) return "null";
+        return $"{EdgeToString(face.edge)}";
+    }
+
     /// <summary>
     /// Builds a HalfEdgeMesh from a Unity Mesh.
     /// </summary>

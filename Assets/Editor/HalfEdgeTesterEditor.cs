@@ -24,9 +24,14 @@ public class HalfEdgeTesterEditor : Editor
             UnityEngine.Debug.Log($"Mesh cleared in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
         }
 
+        if (GUILayout.Button("Select Random Face"))
+        {
+            tester.SelectRandomFace();
+        }
+
         if (GUILayout.Button("Create Tetrahedron"))
         {
-            Stopwatch stopwatch = new Stopwatch();
+            Stopwatch stopwatch = new Stopwatch(); // TODO Remove this and place it in the mesh class where the function is defined
             stopwatch.Start();
 
             tester.CreateTetrahedron();

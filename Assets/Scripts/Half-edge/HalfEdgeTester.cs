@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -8,6 +10,7 @@ using UnityEditor;
 public class HalfEdgeTester : MonoBehaviour
 {
     private HalfEdgeMesh hem;
+    private HEFace selectedFace;
 
     public void ClearMesh()
     {
@@ -20,6 +23,22 @@ public class HalfEdgeTester : MonoBehaviour
         }
     }
 
+    public void SelectRandomFace(){
+        if (hem == null || hem.faces == null || hem.faces.Count == 0){
+            Debug.LogWarning("No faces available to select.");
+            selectedFace = null;
+            return;
+        }
+        else
+        {
+            selectedFace = hem.SelectRandomFace();
+            List<HEHalfEdge> verticesOfFace = hem.VerticesOfFace(hem.SelectRandomFace());
+            foreach (var HEHalfEdge in verticesOfFace)
+            {
+                Debug.Log(hem.EdgeToString(HEHalfEdge));
+            }
+        }
+    }
 
     public void CreateTetrahedron()
     {
@@ -57,6 +76,7 @@ public class HalfEdgeTester : MonoBehaviour
             // Draw arrow head
             float arrowSize = 0.1f;
             Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
+            
         }
     }
 #endif
