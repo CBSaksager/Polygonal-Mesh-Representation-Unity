@@ -40,6 +40,11 @@ public class HalfEdgeTesterEditor : Editor
             UnityEngine.Debug.Log($"Tetrahedron created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
         }
 
+        if (GUILayout.Button("Face Split"))
+        {
+            tester.SplitFace(); 
+        }
+
         // Future shapes here:
         // if (GUILayout.Button("Create Cube")) { ... }
     }

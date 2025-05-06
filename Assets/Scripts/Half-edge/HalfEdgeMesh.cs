@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Represents a complete half-edge (DCEL) mesh structure, useful for advanced mesh editing.
-/// </summary>
 public class HalfEdgeMesh
 {
     public List<HEVertex> vertices = new List<HEVertex>();
@@ -13,9 +10,6 @@ public class HalfEdgeMesh
     // Internal mapping to track edge pairs for twin linking
     private Dictionary<(int, int), HEHalfEdge> edgeMap = new Dictionary<(int, int), HEHalfEdge>();
 
-    /// <summary>
-    /// Adds a new vertex to the mesh.
-    /// </summary>
     public HEVertex AddVertex(Vector3 position)
     {
         var vertex = new HEVertex(position);
@@ -23,9 +17,6 @@ public class HalfEdgeMesh
         return vertex;
     }
 
-    /// <summary>
-    /// Adds a new triangular face defined by three vertices.
-    /// </summary>
     public HEFace AddFace(HEVertex v0, HEVertex v1, HEVertex v2)
     {
         HEHalfEdge he0 = new HEHalfEdge { vertex = v0 };
@@ -68,18 +59,36 @@ public class HalfEdgeMesh
         return selectedFace;
     }
 
-    public List<HEHalfEdge> VerticesOfFace(HEFace face){
+    public List<HEVertex> VerticesOfFace(HEFace face){
         if (face == null) return null;
         HEHalfEdge edge = face.edge;
         HEHalfEdge firstEdge = edge;
-        List<HEHalfEdge> edges = new List<HEHalfEdge>();
+        List<HEVertex> vertices = new List<HEVertex>();
         do
         {
-            edges.Add(edge);
+            vertices.Add(edge.vertex);
             edge = edge.next;
         } while (edge != firstEdge);
-        return edges; 
+        return vertices; 
     }
+
+    public void SplitFace(HEFace face){
+        if (face == null) return;
+        List<HEVertex> vertices = VerticesOfFace(face);
+        if (vertices == null || vertices.Count < 3) return; // Ensure we have at least 3 vertices
+
+        // Step 1: Create the new center vertex at the face centroid
+        Vector3 center = Vector3.zero;
+        foreach (var vertex in vertices)
+        {
+            center += vertex.position;
+        }
+        center /= vertices.Count;
+        AddVertex(center);
+
+        // TODO: Rest of algorithm
+    }
+
 
     public string EdgeToString(HEHalfEdge edge)
     {

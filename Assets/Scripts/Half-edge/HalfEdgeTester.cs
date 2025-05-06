@@ -32,12 +32,21 @@ public class HalfEdgeTester : MonoBehaviour
         else
         {
             selectedFace = hem.SelectRandomFace();
-            List<HEHalfEdge> verticesOfFace = hem.VerticesOfFace(hem.SelectRandomFace());
-            foreach (var HEHalfEdge in verticesOfFace)
+            List<HEVertex> verticesOfFace = hem.VerticesOfFace(hem.SelectRandomFace());
+            foreach (var HEVertex in verticesOfFace)
             {
-                Debug.Log(hem.EdgeToString(HEHalfEdge));
+                Debug.Log(hem.VertexToString(HEVertex)); // Fix: Make it one message so v1 -> v2 -> v3
             }
         }
+    }
+
+    public void SplitFace(){
+        if (hem == null || selectedFace == null)
+        {
+            Debug.LogWarning("No face selected or mesh is null.");
+            return;
+        }
+        hem.SplitFace(selectedFace);
     }
 
     public void CreateTetrahedron()
@@ -71,12 +80,33 @@ public class HalfEdgeTester : MonoBehaviour
             Vector3 dir = (to - from).normalized;
 
             // Draw the edge line
-            Handles.DrawAAPolyLine(2.5f, from, to);
+            Handles.DrawAAPolyLine(4f, from, to);
 
             // Draw arrow head
-            float arrowSize = 0.1f;
+            float arrowSize = 0.4f;
             Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
             
+        }
+
+        // Draw vertices as dots
+        Handles.color = Color.blue;
+        float vertexSize = 0.03f;
+        
+        // Collect unique vertices from half-edges
+        HashSet<HEVertex> uniqueVertices = new HashSet<HEVertex>();
+        foreach (var he in hem.halfEdges)
+        {
+            if (he != null && he.origin != null)
+            {
+                uniqueVertices.Add(he.origin);
+            }
+        }
+        
+        // Draw each vertex as a dot
+        foreach (var vertex in uniqueVertices)
+        {
+            Vector3 position = transform.TransformPoint(vertex.position);
+            Handles.SphereHandleCap(0, position, Quaternion.identity, vertexSize, EventType.Repaint);
         }
     }
 #endif
