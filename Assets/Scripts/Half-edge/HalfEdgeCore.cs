@@ -17,6 +17,7 @@ public class HEHalfEdge
     public HEVertex origin;
     public HEHalfEdge twin;
     public HEHalfEdge next;
+    public HEHalfEdge prev;
     public HEFace face;
 }
 
