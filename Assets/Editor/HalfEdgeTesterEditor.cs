@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Diagnostics;
+using UnityEditor.SearchService;
 
 [CustomEditor(typeof(HalfEdgeTester))]
 public class HalfEdgeTesterEditor : Editor
@@ -47,5 +48,6 @@ public class HalfEdgeTesterEditor : Editor
 
         // Future shapes here:
         // if (GUILayout.Button("Create Cube")) { ... }
+        SceneView.RepaintAll(); // Force Scene to refresh the Gizmos
     }
 }
