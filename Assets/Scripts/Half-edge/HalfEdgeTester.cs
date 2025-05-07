@@ -67,12 +67,20 @@ public class HalfEdgeTester : MonoBehaviour
     {
         if (hem == null || hem.halfEdges == null) return;
 
-        Handles.color = Color.black;
-
+        // First pass: Draw all edges in black
         foreach (var he in hem.halfEdges)
         {
             if (he == null || he.origin == null || he.next?.origin == null)
                 continue;
+
+            // Check if this edge belongs to the selected face
+            bool isSelectedFaceEdge = (selectedFace != null && he.face == selectedFace);
+            
+            // Skip highlighted edges in this pass
+            if (isSelectedFaceEdge)
+                continue;
+                
+            Handles.color = Color.black;
 
             Vector3 from = transform.TransformPoint(he.origin.position);
             Vector3 to = transform.TransformPoint(he.next.origin.position);
@@ -80,33 +88,42 @@ public class HalfEdgeTester : MonoBehaviour
             Vector3 dir = (to - from).normalized;
 
             // Draw the edge line
-            Handles.DrawAAPolyLine(4f, from, to);
+            Handles.DrawAAPolyLine(2.5f, from, to);
 
             // Draw arrow head
-            float arrowSize = 0.4f;
+            float arrowSize = 0.1f;
             Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
+        }
+        
+        // Second pass: Draw selected face edges in a different color
+        if (selectedFace != null)
+        {
+            Handles.color = Color.red; // Change to your preferred highlight color
             
-        }
-
-        // Draw vertices as dots
-        Handles.color = Color.blue;
-        float vertexSize = 0.03f;
-        
-        // Collect unique vertices from half-edges
-        HashSet<HEVertex> uniqueVertices = new HashSet<HEVertex>();
-        foreach (var he in hem.halfEdges)
-        {
-            if (he != null && he.origin != null)
-            {
-                uniqueVertices.Add(he.origin);
-            }
-        }
-        
-        // Draw each vertex as a dot
-        foreach (var vertex in uniqueVertices)
-        {
-            Vector3 position = transform.TransformPoint(vertex.position);
-            Handles.SphereHandleCap(0, position, Quaternion.identity, vertexSize, EventType.Repaint);
+            List<HEVertex> verticesOfFace = hem.VerticesOfFace(selectedFace);
+            
+            // Start with the face's half-edge and traverse all edges of the face
+            HEHalfEdge startEdge = selectedFace.edge;
+            HEHalfEdge currentEdge = startEdge;
+            
+            do {
+                if (currentEdge != null && currentEdge.origin != null && currentEdge.next?.origin != null)
+                {
+                    Vector3 from = transform.TransformPoint(currentEdge.origin.position);
+                    Vector3 to = transform.TransformPoint(currentEdge.next.origin.position);
+                    Vector3 mid = (from + to) * 0.5f;
+                    Vector3 dir = (to - from).normalized;
+                    
+                    // Draw the edge line
+                    Handles.DrawAAPolyLine(2.5f, from, to);
+                    
+                    // Draw arrow head
+                    float arrowSize = 0.1f;
+                    Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
+                }
+                
+                currentEdge = currentEdge.next;
+            } while (currentEdge != null && currentEdge != startEdge);
         }
     }
 #endif

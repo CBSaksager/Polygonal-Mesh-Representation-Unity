@@ -2,10 +2,10 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 
 #### TODOs:
 **Rotation System**
-- Fix face split to avoid duplicates
-- Highlight selected face
+- [ ] Fix face split to avoid duplicates
+- [ ] Highlight selected face
 
 **Half Edge**
-- Highlight selected face
-- Finish split face
-    - Insert edges o_O
+- [x] Highlight selected face
+- [ ] Finish split face
+    - [ ] Insert edges o_O
