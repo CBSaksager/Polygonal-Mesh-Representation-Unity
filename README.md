@@ -3,9 +3,13 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 #### TODOs:
 **Rotation System**
 - [ ] Fix face split to avoid duplicates
+    - [ ] Fix the temp solution to random selection of face
 - [ ] Highlight selected face
 
 **Half Edge**
 - [x] Highlight selected face
 - [ ] Finish split face
     - [ ] Insert edges o_O
+
+**Overall**
+- [ ] *Clear mesh* buttons needs to reset all data (right now not resetting selected face)
