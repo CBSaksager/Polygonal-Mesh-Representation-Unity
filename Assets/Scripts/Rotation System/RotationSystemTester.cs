@@ -7,6 +7,28 @@ using UnityEditor;
 public class RotationSystemTester : MonoBehaviour
 {
     public RsMesh rsMesh;
+    public List<RsVertex> selectedFace;
+
+    public void SelectRandomFace(){ // Fix: Clean
+        if (rsMesh == null || rsMesh.vertices == null || rsMesh.vertices.Count < 3)
+        {
+            Debug.LogWarning("Not enough vertices to select a face.");
+            return;
+        }
+
+        selectedFace = rsMesh.SelectRandomFace();
+        if (selectedFace != null)
+        {
+            foreach (RsVertex vertex in selectedFace)
+            {
+                Debug.Log($"Selected vertex: {vertex.position}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No face selected.");
+        }
+    }
 
     public void CreateTetrahedron()
     {
@@ -18,36 +40,14 @@ public class RotationSystemTester : MonoBehaviour
         rsMesh = null;
     }
 
-    public void SplitFace(int aIndex, int bIndex, int cIndex)
+    public void SplitFace()
     {
-        if (rsMesh == null) return;
-
-        Vector3 posA = rsMesh.vertices[aIndex].position;
-        Vector3 posB = rsMesh.vertices[bIndex].position;
-        Vector3 posC = rsMesh.vertices[cIndex].position;
-
-        // Step 1: Create the new center vertex at the face centroid
-        Vector3 center = (posA + posB + posC) / 3f;
-        int vIndex = rsMesh.vertices.Count;
-        rsMesh.vertices.Add(new RsVertex(center));
-
-        // Step 2: Update the new vertex’s neighbors (in correct order)
-        rsMesh.vertices[vIndex].neighbors.AddRange(new int[] { aIndex, bIndex, cIndex });
-
-        // Step 3: Update the original vertices’ neighbor cycles to insert V
-
-        InsertAfterNeighbor(rsMesh.vertices[aIndex], cIndex, vIndex);
-        InsertAfterNeighbor(rsMesh.vertices[bIndex], aIndex, vIndex);
-        InsertAfterNeighbor(rsMesh.vertices[cIndex], bIndex, vIndex);
-    }
-
-    private void InsertAfterNeighbor(RsVertex v, int after, int insert)
-    {
-        int i = v.neighbors.IndexOf(after);
-        if (i != -1)
+        if (rsMesh == null || rsMesh.vertices == null || selectedFace == null)
         {
-            v.neighbors.Insert((i + 1) % (v.neighbors.Count + 1), insert);
+            Debug.LogWarning("Not enough vertices to split a face.");
+            return;
         }
+        rsMesh.SplitFace(rsMesh, selectedFace);    
     }
 
 #if UNITY_EDITOR

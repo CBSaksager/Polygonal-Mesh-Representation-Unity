@@ -20,9 +20,14 @@ public class RotationSystemTesterEditor : Editor
             tester.CreateTetrahedron();
         }
 
-        if (GUILayout.Button("Face Split (0-1-2)"))
+        if (GUILayout.Button("Select Random Face"))
         {
-            tester.SplitFace(0, 1, 2); // Test on triangle 0-1-2
+            tester.SelectRandomFace();
+        }
+
+        if (GUILayout.Button("Face Split"))
+        {
+            tester.SplitFace();
         }
 
 
