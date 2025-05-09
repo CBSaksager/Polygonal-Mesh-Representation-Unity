@@ -9,7 +9,8 @@ public class RotationSystemTester : MonoBehaviour
     public RsMesh rsMesh;
     public List<RsVertex> selectedFace;
 
-    public void SelectRandomFace(){ // Fix: Clean
+    public void SelectRandomFace()
+    { // Fix: Clean
         if (rsMesh == null || rsMesh.vertices == null || rsMesh.vertices.Count < 3)
         {
             Debug.LogWarning("Not enough vertices to select a face.");
@@ -32,12 +33,14 @@ public class RotationSystemTester : MonoBehaviour
 
     public void CreateTetrahedron()
     {
+        selectedFace = null;
         rsMesh = RsMesh.CreateTetrahedron();
     }
 
     public void ClearMesh()
     {
         rsMesh = null;
+        selectedFace = null;
     }
 
     public void SplitFace()
@@ -47,7 +50,7 @@ public class RotationSystemTester : MonoBehaviour
             Debug.LogWarning("Not enough vertices to split a face.");
             return;
         }
-        rsMesh.SplitFace(rsMesh, selectedFace);    
+        rsMesh.SplitFace(rsMesh, selectedFace);
     }
 
 #if UNITY_EDITOR
