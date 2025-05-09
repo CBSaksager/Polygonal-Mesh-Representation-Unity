@@ -79,6 +79,24 @@ public class RotationSystemTester : MonoBehaviour
                 Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), 0.1f, EventType.Repaint);
             }
         }
+
+        // Draw selected face in red
+        if (selectedFace != null && selectedFace.Count >= 3)
+        {
+            Handles.color = Color.red;
+
+            for (int i = 0; i < selectedFace.Count; i++)
+            {
+                Vector3 from = transform.TransformPoint(selectedFace[i].position);
+                Vector3 to = transform.TransformPoint(selectedFace[(i + 1) % selectedFace.Count].position);
+                Vector3 mid = (from + to) * 0.5f;
+                Vector3 dir = (to - from).normalized;
+
+                Handles.DrawAAPolyLine(3.5f, from, to);
+                Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), 0.15f, EventType.Repaint);
+            }
+        }
+
     }
 #endif
 
