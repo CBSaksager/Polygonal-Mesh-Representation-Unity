@@ -8,8 +8,10 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 
 **Half Edge**
 - [x] Highlight selected face
-- [ ] Finish split face
-    - [ ] Insert edges o_O
+- [x] Finish split face
+    - [ ? ] Insert edges o_O
+- [ ] Organize code files
 
 **Overall**
 - [ ] *Clear mesh* buttons needs to reset all data (right now not resetting selected face)
+- [ ] Try added/importing other mesh structures/files
