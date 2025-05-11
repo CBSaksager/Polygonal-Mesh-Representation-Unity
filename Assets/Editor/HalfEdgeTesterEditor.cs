@@ -43,7 +43,8 @@ public class HalfEdgeTesterEditor : Editor
 
         if (GUILayout.Button("Face Split"))
         {
-            tester.SplitFace(); 
+            tester.SelectRandomFace();
+            tester.SplitFace();
         }
 
         // Future shapes here:

@@ -15,6 +15,7 @@ public class HalfEdgeTester : MonoBehaviour
     public void ClearMesh()
     {
         hem = null;
+        selectedFace = null;
 
         var meshFilter = GetComponent<MeshFilter>();
         if (meshFilter != null)
@@ -23,8 +24,10 @@ public class HalfEdgeTester : MonoBehaviour
         }
     }
 
-    public void SelectRandomFace(){
-        if (hem == null || hem.faces == null || hem.faces.Count == 0){
+    public void SelectRandomFace()
+    {
+        if (hem == null || hem.faces == null || hem.faces.Count == 0)
+        {
             Debug.LogWarning("No faces available to select.");
             selectedFace = null;
             return;
@@ -40,7 +43,8 @@ public class HalfEdgeTester : MonoBehaviour
         }
     }
 
-    public void SplitFace(){
+    public void SplitFace()
+    {
         if (hem == null || selectedFace == null)
         {
             Debug.LogWarning("No face selected or mesh is null.");
@@ -75,11 +79,11 @@ public class HalfEdgeTester : MonoBehaviour
 
             // Check if this edge belongs to the selected face
             bool isSelectedFaceEdge = (selectedFace != null && he.face == selectedFace);
-            
+
             // Skip highlighted edges in this pass
             if (isSelectedFaceEdge)
                 continue;
-                
+
             Handles.color = Color.black;
 
             Vector3 from = transform.TransformPoint(he.origin.position);
@@ -94,34 +98,35 @@ public class HalfEdgeTester : MonoBehaviour
             float arrowSize = 0.1f;
             Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
         }
-        
+
         // Second pass: Draw selected face edges in a different color
         if (selectedFace != null)
         {
             Handles.color = Color.red; // Change to your preferred highlight color
-            
+
             List<HEVertex> verticesOfFace = hem.VerticesOfFace(selectedFace);
-            
+
             // Start with the face's half-edge and traverse all edges of the face
             HEHalfEdge startEdge = selectedFace.edge;
             HEHalfEdge currentEdge = startEdge;
-            
-            do {
+
+            do
+            {
                 if (currentEdge != null && currentEdge.origin != null && currentEdge.next?.origin != null)
                 {
                     Vector3 from = transform.TransformPoint(currentEdge.origin.position);
                     Vector3 to = transform.TransformPoint(currentEdge.next.origin.position);
                     Vector3 mid = (from + to) * 0.5f;
                     Vector3 dir = (to - from).normalized;
-                    
+
                     // Draw the edge line
                     Handles.DrawAAPolyLine(2.5f, from, to);
-                    
+
                     // Draw arrow head
                     float arrowSize = 0.1f;
                     Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
                 }
-                
+
                 currentEdge = currentEdge.next;
             } while (currentEdge != null && currentEdge != startEdge);
         }

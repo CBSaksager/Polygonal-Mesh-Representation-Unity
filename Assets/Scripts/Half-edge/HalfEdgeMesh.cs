@@ -28,6 +28,11 @@ public class HalfEdgeMesh
         he1.next = he2;
         he2.next = he0;
 
+        // Set origin vertices (needed for drawing)
+        he0.origin = v1;
+        he1.origin = v2;
+        he2.origin = v0;
+
         // Create face and link it
         HEFace face = new HEFace { edge = he0 };
         he0.face = face;
@@ -59,7 +64,8 @@ public class HalfEdgeMesh
         return selectedFace;
     }
 
-    public List<HEVertex> VerticesOfFace(HEFace face){
+    public List<HEVertex> VerticesOfFace(HEFace face)
+    {
         if (face == null) return null;
         HEHalfEdge edge = face.edge;
         HEHalfEdge firstEdge = edge;
@@ -69,10 +75,11 @@ public class HalfEdgeMesh
             vertices.Add(edge.vertex);
             edge = edge.next;
         } while (edge != firstEdge);
-        return vertices; 
+        return vertices;
     }
 
-    public void SplitFace(HEFace face){
+    public void SplitFace(HEFace face)
+    {
         if (face == null) return;
         List<HEVertex> vertices = VerticesOfFace(face);
         if (vertices == null || vertices.Count < 3) return; // Ensure we have at least 3 vertices
@@ -84,11 +91,30 @@ public class HalfEdgeMesh
             center += vertex.position;
         }
         center /= vertices.Count;
-        AddVertex(center);
+        HEVertex centerVertex = AddVertex(center);
 
-        // TODO: Rest of algorithm
+        // Step 2: Save the original edges before we modify the structure
+        HEHalfEdge currentEdge = face.edge;
+        List<HEHalfEdge> originalEdges = new List<HEHalfEdge>();
+        do
+        {
+            originalEdges.Add(currentEdge);
+            currentEdge = currentEdge.next;
+        } while (currentEdge != face.edge);
+
+        // Step 3: Create new triangular faces connecting each original edge to the center vertex
+        for (int i = 0; i < originalEdges.Count; i++)
+        {
+            HEVertex v1 = originalEdges[i].vertex;
+            HEVertex v2 = originalEdges[i].next.vertex;
+
+            // Create a new triangular face (maintaining proper orientation)
+            AddFace(centerVertex, v1, v2);
+        }
+
+        // Step 4: Remove the original face from the mesh
+        faces.Remove(face);
     }
-
 
     public string EdgeToString(HEHalfEdge edge)
     {
