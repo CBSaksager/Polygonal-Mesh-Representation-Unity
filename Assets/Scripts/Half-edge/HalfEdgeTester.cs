@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -28,7 +30,7 @@ public class HalfEdgeTester : MonoBehaviour
     {
         if (hem == null || hem.faces == null || hem.faces.Count == 0)
         {
-            Debug.LogWarning("No faces available to select.");
+            UnityEngine.Debug.LogWarning("No faces available to select.");
             selectedFace = null;
             return;
         }
@@ -38,7 +40,7 @@ public class HalfEdgeTester : MonoBehaviour
             List<HEVertex> verticesOfFace = hem.VerticesOfFace(hem.SelectRandomFace());
             foreach (var HEVertex in verticesOfFace)
             {
-                Debug.Log(hem.VertexToString(HEVertex)); // Fix: Make it one message so v1 -> v2 -> v3
+                UnityEngine.Debug.Log(hem.VertexToString(HEVertex)); // Fix: Make it one message so v1 -> v2 -> v3
             }
         }
     }
@@ -47,10 +49,16 @@ public class HalfEdgeTester : MonoBehaviour
     {
         if (hem == null || selectedFace == null)
         {
-            Debug.LogWarning("No face selected or mesh is null.");
+            UnityEngine.Debug.LogWarning("No face selected or mesh is null.");
             return;
         }
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         hem.SplitFace(selectedFace);
+
+        stopwatch.Stop();
+        UnityEngine.Debug.Log($"Face split in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
     }
 
     public void CreateTetrahedron()
