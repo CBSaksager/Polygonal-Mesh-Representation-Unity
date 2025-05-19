@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+
 
 
 #if UNITY_EDITOR
@@ -58,7 +60,7 @@ public class HalfEdgeTester : MonoBehaviour
         hem.SplitFace(selectedFace);
 
         stopwatch.Stop();
-        UnityEngine.Debug.Log($"Face split in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
+        File.AppendAllText("Assets/Test results/test1.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} ms. \n");
     }
 
     public void CreateTetrahedron()

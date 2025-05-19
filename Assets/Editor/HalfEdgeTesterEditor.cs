@@ -6,6 +6,8 @@ using UnityEditor.SearchService;
 [CustomEditor(typeof(HalfEdgeTester))]
 public class HalfEdgeTesterEditor : Editor
 {
+    private int numberOfTests = 10; // Default value for the number of tests
+
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -46,7 +48,6 @@ public class HalfEdgeTesterEditor : Editor
             tester.SplitFace();
         }
 
-        int numberOfTests = 10; // Default value
         numberOfTests = EditorGUILayout.IntField("Number of Tests", numberOfTests);
         if (GUILayout.Button("Mass Test Split Face"))
         {
