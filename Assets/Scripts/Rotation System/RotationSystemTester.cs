@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,7 +11,8 @@ public class RotationSystemTester : MonoBehaviour
     public RsMesh rsMesh;
     public List<RsVertex> selectedFace;
 
-    public void SelectRandomFace(){ // Fix: Clean
+    public void SelectRandomFace()
+    { // Fix: Clean
         if (rsMesh == null || rsMesh.vertices == null || rsMesh.vertices.Count < 3)
         {
             Debug.LogWarning("Not enough vertices to select a face.");
@@ -37,6 +40,7 @@ public class RotationSystemTester : MonoBehaviour
 
     public void ClearMesh()
     {
+        selectedFace = null;
         rsMesh = null;
     }
 
@@ -47,7 +51,7 @@ public class RotationSystemTester : MonoBehaviour
             Debug.LogWarning("Not enough vertices to split a face.");
             return;
         }
-        rsMesh.SplitFace(rsMesh, selectedFace);    
+        rsMesh.SplitFace(rsMesh, selectedFace);
     }
 
 #if UNITY_EDITOR
@@ -69,6 +73,23 @@ public class RotationSystemTester : MonoBehaviour
                     continue;
 
                 Vector3 to = transform.TransformPoint(rsMesh.vertices[neighborIndex].position);
+                Vector3 mid = (from + to) * 0.5f;
+                Vector3 dir = (to - from).normalized;
+
+                Handles.DrawAAPolyLine(2.5f, from, to);
+                Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), 0.1f, EventType.Repaint);
+            }
+        }
+
+        // Draw the selected face in red
+        if (selectedFace != null && selectedFace.Count >= 3)
+        {
+            Handles.color = Color.red;
+
+            for (int i = 0; i < selectedFace.Count; i++)
+            {
+                Vector3 from = transform.TransformPoint(selectedFace[i].position);
+                Vector3 to = transform.TransformPoint(selectedFace[(i + 1) % selectedFace.Count].position);
                 Vector3 mid = (from + to) * 0.5f;
                 Vector3 dir = (to - from).normalized;
 
