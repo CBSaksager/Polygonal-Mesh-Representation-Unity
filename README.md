@@ -11,6 +11,7 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 - [x] Finish split face
     - [ ? ] Insert edges o_O
 - [ ] Organize code files
+- [ ] AddFace upgrade to handle more than just 3 vertices
 
 **Overall**
 - [ ] *Clear mesh* buttons needs to reset all data (right now not resetting selected face)
