@@ -4,6 +4,7 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 **Rotation System**
 - [ ] Fix face split to avoid duplicates
     - [ ] Fix the temp solution to random selection of face
+        - When selecting a face it sometimes selects two vertices that *legally* is not on the same face
 - [ ] Highlight selected face
 
 **Half-Edge**
