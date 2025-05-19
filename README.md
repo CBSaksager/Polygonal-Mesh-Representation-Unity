@@ -6,12 +6,14 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
     - [ ] Fix the temp solution to random selection of face
 - [ ] Highlight selected face
 
-**Half Edge**
+**Half-Edge**
 - [x] Highlight selected face
 - [x] Finish split face
     - [ ? ] Insert edges o_O
 - [ ] Organize code files
 - [ ] AddFace upgrade to handle more than just 3 vertices
+- [ ] Create stopwatches correct places
+- [ ] Mass face split testing to exported document
 
 **Overall**
 - [ ] *Clear mesh* buttons needs to reset all data (right now not resetting selected face)
