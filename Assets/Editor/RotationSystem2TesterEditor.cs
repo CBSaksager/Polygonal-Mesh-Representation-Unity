@@ -26,6 +26,16 @@ public class RotationSystem2TesterEditor : Editor
             tester.SelectRandomEdge();
         }
 
+        if (GUILayout.Button("Next Edge of Vertex"))
+        {
+            tester.SelectNextEdgeOfVertex();
+        }
+
+        if (GUILayout.Button("Next Edge of Face"))
+        {
+            tester.SelectNextEdgeOfFace();
+        }
+
         SceneView.RepaintAll(); // Force Scene to refresh the Gizmos
     }
 }

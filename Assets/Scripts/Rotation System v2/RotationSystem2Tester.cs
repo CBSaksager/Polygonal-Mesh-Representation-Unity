@@ -36,6 +36,30 @@ public class RotationSystem2Tester : MonoBehaviour
         }
     }
 
+    public void SelectNextEdgeOfVertex()
+    {
+        if (selectedEdge == null)
+        {
+            Debug.LogError("No edge selected.");
+            return;
+        }
+
+        selectedEdge = rsMesh.Rho(selectedEdge);
+        Debug.Log($"Selected Next Edge: {selectedEdge.from.position} -> {selectedEdge.to.position}");
+    }
+
+    public void SelectNextEdgeOfFace()
+    {
+        if (selectedEdge == null)
+        {
+            Debug.LogError("No edge selected.");
+            return;
+        }
+
+        selectedEdge = rsMesh.Tau(selectedEdge);
+        Debug.Log($"Selected Next Edge of Face: {selectedEdge.from.position} -> {selectedEdge.to.position}");
+    }
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
