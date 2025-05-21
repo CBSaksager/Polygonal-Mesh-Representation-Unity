@@ -5,6 +5,12 @@ public class RSEdge
 {
     public RSVertex from;
     public RSVertex to;
+
+    public RSEdge(RSVertex from, RSVertex to)
+    {
+        this.from = from;
+        this.to = to;
+    }
 }
 
 public class RSVertex

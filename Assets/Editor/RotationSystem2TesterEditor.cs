@@ -21,6 +21,11 @@ public class RotationSystem2TesterEditor : Editor
             tester.CreateTetrahedron();
         }
 
+        if (GUILayout.Button("Select Random Edge"))
+        {
+            tester.SelectRandomEdge();
+        }
+
         SceneView.RepaintAll(); // Force Scene to refresh the Gizmos
     }
 }
