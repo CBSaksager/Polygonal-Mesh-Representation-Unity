@@ -41,6 +41,11 @@ public class RotationSystem2TesterEditor : Editor
             tester.SelectRandomFace();
         }
 
+        if (GUILayout.Button("Split Face"))
+        {
+            tester.SplitFace();
+        }
+
         SceneView.RepaintAll(); // Force Scene to refresh the Gizmos
     }
 }

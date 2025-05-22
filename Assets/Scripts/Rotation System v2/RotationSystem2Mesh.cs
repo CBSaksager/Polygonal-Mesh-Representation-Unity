@@ -100,6 +100,11 @@ public class RSMesh
         return faceVertices;
     }
 
+    public void SplitFace(List<RSVertex> faceVertices)
+    {
+        // TODO: Implement the face splitting logic
+        return;
+    }
 
     public static RSMesh CreateTetrahedron()
     {

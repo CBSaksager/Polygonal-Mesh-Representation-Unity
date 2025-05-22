@@ -85,6 +85,18 @@ public class RotationSystem2Tester : MonoBehaviour
         }
     }
 
+    public void SplitFace()
+    {
+        if (selectedFaceVertices == null || selectedFaceVertices.Count < 3)
+        {
+            Debug.LogError("Select a valid face to split.");
+            return;
+        }
+
+        rsMesh.SplitFace(selectedFaceVertices);
+        Debug.Log("Face split successfully.");
+    }
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
