@@ -12,7 +12,18 @@ public class RSMesh
     // Traversal Functions:
     public RSEdge Iota(RSEdge edge)
     {
-        return new RSEdge(edge.to, edge.from); // Does it need to be new? 
+        // Find the existing edge from 'to' vertex to 'from' vertex
+        foreach (RSEdge oppositeEdge in edge.to.edges)
+        {
+            if (oppositeEdge.to == edge.from)
+            {
+                return oppositeEdge;
+            }
+        }
+
+        // Fallback in case the mesh structure is incomplete
+        UnityEngine.Debug.LogWarning("Could not find existing opposite edge - creating new one");
+        return new RSEdge(edge.to, edge.from);
     }
 
     // Rho: returns the next edge in the cyclic order around 'from' vertex
@@ -46,6 +57,8 @@ public class RSMesh
         // Tau = Rho ∘ Iota
         return Rho(Iota(edge));
     }
+
+
 
     public RSEdge SelectRandomEdge()
     {
