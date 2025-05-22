@@ -58,8 +58,6 @@ public class RSMesh
         return Rho(Iota(edge));
     }
 
-
-
     public RSEdge SelectRandomEdge()
     {
         if (vertices.Count == 0)
@@ -75,6 +73,33 @@ public class RSMesh
         RSEdge selectedEdge = randomVertex.edges[Random.Range(0, randomVertex.edges.Count)];
         return selectedEdge;
     }
+
+    public List<RSVertex> SelectRandomFace()
+    {
+
+        // Steps:
+        // 1. Select a random edge from the mesh.
+        List<RSVertex> faceVertices = new List<RSVertex>();
+        RSEdge randomEdge = SelectRandomEdge();
+        if (randomEdge == null)
+        {
+            return null;
+        }
+        RSEdge currentEdge = randomEdge;
+        // 2. Use the Tau function to get the next edge in the face cycle.
+        do
+        {
+            // 3. Add the 'from' vertex of the current edge to the face vertices list.
+            faceVertices.Add(currentEdge.from);
+            // 4. Move to the next edge using the Tau function.
+            currentEdge = Tau(currentEdge);
+            // 5. Continue until we return to the starting edge.
+        } while (currentEdge != randomEdge);
+
+        // 6. Return the list of vertices.
+        return faceVertices;
+    }
+
 
     public static RSMesh CreateTetrahedron()
     {

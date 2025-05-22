@@ -36,6 +36,11 @@ public class RotationSystem2TesterEditor : Editor
             tester.SelectNextEdgeOfFace();
         }
 
+        if (GUILayout.Button("Select Random Face"))
+        {
+            tester.SelectRandomFace();
+        }
+
         SceneView.RepaintAll(); // Force Scene to refresh the Gizmos
     }
 }
