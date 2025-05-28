@@ -118,6 +118,15 @@ public class RSMesh
         mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[0], mesh.vertices[2], mesh.vertices[3] })); // Face 2
         mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[1], mesh.vertices[2], mesh.vertices[3] })); // Face 3
 
+        // Assign faces to vertices
+        foreach (var face in mesh.faces)
+        {
+            foreach (var vertex in face.vertices)
+            {
+                vertex.faces.Add(face);
+            }
+        }
+
         stopwatch.Stop();
         UnityEngine.Debug.Log($"Rotation System Tetrahedron created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms");
 
