@@ -6,6 +6,7 @@ using UnityEngine;
 public class RSMesh
 {
     public List<RSVertex> vertices = new List<RSVertex>();
+    public List<RSFace> faces = new List<RSFace>();
 
     public RSMesh() { }
 
@@ -76,28 +77,14 @@ public class RSMesh
 
     public List<RSVertex> SelectRandomFace()
     {
-
-        // Steps:
-        // 1. Select a random edge from the mesh.
-        List<RSVertex> faceVertices = new List<RSVertex>();
-        RSEdge randomEdge = SelectRandomEdge();
-        if (randomEdge == null)
-        {
+        if (faces.Count == 0)
             return null;
-        }
-        RSEdge currentEdge = randomEdge;
-        // 2. Use the Tau function to get the next edge in the face cycle.
-        do
-        {
-            // 3. Add the 'from' vertex of the current edge to the face vertices list.
-            faceVertices.Add(currentEdge.from);
-            // 4. Move to the next edge using the Tau function.
-            currentEdge = Tau(currentEdge);
-            // 5. Continue until we return to the starting edge.
-        } while (currentEdge != randomEdge);
 
-        // 6. Return the list of vertices.
-        return faceVertices;
+        // Select a random face
+        RSFace randomFace = faces[Random.Range(0, faces.Count)];
+
+        // Return the vertices of the selected face
+        return randomFace.vertices;
     }
 
     public void SplitFace(List<RSVertex> faceVertices)
@@ -113,6 +100,7 @@ public class RSMesh
 
         RSMesh mesh = new RSMesh();
 
+        // Define vertices of a tetrahedron
         mesh.vertices.Add(new RSVertex(new Vector3(1, 1, 1)));  // 0
         mesh.vertices.Add(new RSVertex(new Vector3(-1, -1, 1))); // 1
         mesh.vertices.Add(new RSVertex(new Vector3(-1, 1, -1))); // 2
@@ -123,6 +111,12 @@ public class RSMesh
         mesh.vertices[1].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[1], mesh.vertices[0]), new RSEdge(mesh.vertices[1], mesh.vertices[3]), new RSEdge(mesh.vertices[1], mesh.vertices[2]) });
         mesh.vertices[2].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[2], mesh.vertices[0]), new RSEdge(mesh.vertices[2], mesh.vertices[1]), new RSEdge(mesh.vertices[2], mesh.vertices[3]) });
         mesh.vertices[3].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[3], mesh.vertices[0]), new RSEdge(mesh.vertices[3], mesh.vertices[2]), new RSEdge(mesh.vertices[3], mesh.vertices[1]) });
+
+        // Define faces
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[0], mesh.vertices[1], mesh.vertices[2] })); // Face 0
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[0], mesh.vertices[1], mesh.vertices[3] })); // Face 1
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[0], mesh.vertices[2], mesh.vertices[3] })); // Face 2
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[1], mesh.vertices[2], mesh.vertices[3] })); // Face 3
 
         stopwatch.Stop();
         UnityEngine.Debug.Log($"Rotation System Tetrahedron created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms");
