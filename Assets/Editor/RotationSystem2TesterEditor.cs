@@ -5,6 +5,8 @@ using UnityEditor;
 [CustomEditor(typeof(RotationSystem2Tester))]
 public class RotationSystem2TesterEditor : Editor
 {
+    private int numberOfTests = 10; // Default value for the number of tests
+
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -44,6 +46,16 @@ public class RotationSystem2TesterEditor : Editor
         if (GUILayout.Button("Split Face"))
         {
             tester.SplitFace();
+        }
+
+        numberOfTests = EditorGUILayout.IntField("Number of Tests", numberOfTests);
+        if (GUILayout.Button("Mass Test Split Face"))
+        {
+            for (int i = 0; i < numberOfTests; i++)
+            {
+                tester.SelectRandomFace();
+                tester.SplitFace();
+            }
         }
 
         SceneView.RepaintAll(); // Force Scene to refresh the Gizmos
