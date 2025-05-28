@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class RSEdge
 {
     public RSVertex from;
@@ -23,6 +24,7 @@ public class RSFace
     }
 }
 
+[System.Serializable]
 public class RSVertex
 {
     public Vector3 position;
