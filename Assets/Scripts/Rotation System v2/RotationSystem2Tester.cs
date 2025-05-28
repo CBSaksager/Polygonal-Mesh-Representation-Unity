@@ -10,7 +10,7 @@ public class RotationSystem2Tester : MonoBehaviour
 {
     public RSMesh rsMesh;
     public RSEdge selectedEdge;
-    public List<RSVertex> selectedFaceVertices;
+    public RSFace selectedFace;
 
     public void CreateTetrahedron()
     {
@@ -21,7 +21,7 @@ public class RotationSystem2Tester : MonoBehaviour
     {
         rsMesh = null;
         selectedEdge = null;
-        selectedFaceVertices = null;
+        selectedFace = null;
     }
 
     public void SelectRandomEdge()
@@ -71,10 +71,18 @@ public class RotationSystem2Tester : MonoBehaviour
             return;
         }
 
-        selectedFaceVertices = rsMesh.SelectRandomFace();
-        if (selectedFaceVertices != null)
+        if (rsMesh.faces.Count == 0)
         {
-            foreach (var vertex in selectedFaceVertices)
+            Debug.LogError("No faces in mesh.");
+            return;
+        }
+
+        // Select a random face
+        selectedFace = rsMesh.faces[Random.Range(0, rsMesh.faces.Count)];
+
+        if (selectedFace != null)
+        {
+            foreach (var vertex in selectedFace.vertices)
             {
                 Debug.Log($"Face Vertex: {vertex.position}");
             }
@@ -87,14 +95,17 @@ public class RotationSystem2Tester : MonoBehaviour
 
     public void SplitFace()
     {
-        if (selectedFaceVertices == null || selectedFaceVertices.Count < 3)
+        if (selectedFace == null)
         {
             Debug.LogError("Select a valid face to split.");
             return;
         }
 
-        rsMesh.SplitFace(selectedFaceVertices);
+        rsMesh.SplitFace(selectedFace);
         Debug.Log("Face split successfully.");
+
+        // Clear the selected face as it no longer exists after splitting
+        selectedFace = null;
     }
 
 #if UNITY_EDITOR
@@ -113,8 +124,14 @@ public class RotationSystem2Tester : MonoBehaviour
 
         foreach (var vertex in rsMesh.vertices)
         {
+            if (vertex.edges == null)
+                continue;
+
             foreach (var edge in vertex.edges)
             {
+                if (edge == null || edge.from == null || edge.to == null)
+                    continue;
+
                 Gizmos.color = Color.black;
                 // Transform positions from local to world space
                 Vector3 fromPos = transform.TransformPoint(edge.from.position);
@@ -124,7 +141,7 @@ public class RotationSystem2Tester : MonoBehaviour
         }
 
         // Draw selected edge
-        if (selectedEdge != null)
+        if (selectedEdge != null && selectedEdge.from != null && selectedEdge.to != null)
         {
             Gizmos.color = Color.green;
             // Transform positions from local to world space
@@ -134,25 +151,33 @@ public class RotationSystem2Tester : MonoBehaviour
         }
 
         // Draw selected face vertices and edges
-        if (selectedFaceVertices != null && selectedFaceVertices.Count > 0)
+        if (selectedFace != null && selectedFace.vertices != null && selectedFace.vertices.Count > 0)
         {
             Gizmos.color = Color.blue;
 
             // Draw vertices
-            foreach (var vertex in selectedFaceVertices)
+            foreach (var vertex in selectedFace.vertices)
             {
+                if (vertex == null)
+                    continue;
+
                 // Transform position to world space
                 Vector3 worldPos = transform.TransformPoint(vertex.position);
                 Gizmos.DrawSphere(worldPos, 0.05f);
             }
 
             // Draw edges connecting the face vertices
-            for (int i = 0; i < selectedFaceVertices.Count; i++)
+            for (int i = 0; i < selectedFace.vertices.Count; i++)
             {
-                int nextIndex = (i + 1) % selectedFaceVertices.Count;
+                int nextIndex = (i + 1) % selectedFace.vertices.Count;
+
+                // Check for null vertices
+                if (selectedFace.vertices[i] == null || selectedFace.vertices[nextIndex] == null)
+                    continue;
+
                 // Transform positions to world space
-                Vector3 fromPos = transform.TransformPoint(selectedFaceVertices[i].position);
-                Vector3 toPos = transform.TransformPoint(selectedFaceVertices[nextIndex].position);
+                Vector3 fromPos = transform.TransformPoint(selectedFace.vertices[i].position);
+                Vector3 toPos = transform.TransformPoint(selectedFace.vertices[nextIndex].position);
                 Gizmos.DrawLine(fromPos, toPos);
             }
         }

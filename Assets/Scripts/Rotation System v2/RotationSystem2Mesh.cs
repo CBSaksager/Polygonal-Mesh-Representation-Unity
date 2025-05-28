@@ -75,21 +75,84 @@ public class RSMesh
         return selectedEdge;
     }
 
-    public List<RSVertex> SelectRandomFace()
+    public void SplitFace(RSFace face)
     {
-        if (faces.Count == 0)
-            return null;
+        // Step 1: Create a new vertex at the centroid of the face
+        Vector3 centroid = Vector3.zero;
+        foreach (var vertex in face.vertices)
+        {
+            centroid += vertex.position;
+        }
+        centroid /= face.vertices.Count;
+        RSVertex newVertex = new RSVertex(centroid);
+        vertices.Add(newVertex);
 
-        // Select a random face
-        RSFace randomFace = faces[Random.Range(0, faces.Count)];
+        // Step 2: Create new edges connecting the new vertex to each vertex of the face and maintain cyclic order
+        for (int i = 0; i < face.vertices.Count; i++)
+        {
+            RSVertex currentVertex = face.vertices[i];
+            RSVertex nextVertex = face.vertices[(i + 1) % face.vertices.Count]; // Next vertex in the face
 
-        // Return the vertices of the selected face
-        return randomFace.vertices;
-    }
+            // Create a new edge from the current vertex to the center
+            RSEdge newEdge = new RSEdge(currentVertex, newVertex);
 
-    public void SplitFace(List<RSVertex> faceVertices)
-    {
-        // TODO: Implement the face splitting logic
+            // Find the edge from current vertex to next vertex in the face
+            int edgeToNextIndex = -1;
+            for (int j = 0; j < currentVertex.edges.Count; j++)
+            {
+                if (currentVertex.edges[j].to == nextVertex)
+                {
+                    edgeToNextIndex = j;
+                    break;
+                }
+            }
+
+            if (edgeToNextIndex != -1)
+            {
+                // Insert the new edge right before the edge to the next vertex
+                // This maintains the proper face traversal order
+                currentVertex.edges.Insert(edgeToNextIndex, newEdge);
+            }
+            else
+            {
+                // Fallback if we can't find the edge (shouldn't happen in a well-formed mesh)
+                UnityEngine.Debug.LogWarning("Could not find edge to next vertex when splitting face");
+                currentVertex.edges.Add(newEdge);
+            }
+
+            // Add the corresponding edge to the new center vertex
+            newVertex.edges.Add(new RSEdge(newVertex, currentVertex));
+        }
+
+        // Step 3: Create new triangular faces
+        for (int i = 0; i < face.vertices.Count; i++)
+        {
+            RSVertex currentVertex = face.vertices[i];
+            RSVertex nextVertex = face.vertices[(i + 1) % face.vertices.Count];
+
+            // Create a new triangular face
+            List<RSVertex> newFaceVertices = new List<RSVertex> { currentVertex, nextVertex, newVertex };
+            RSFace newFace = new RSFace(newFaceVertices);
+
+            // Add the new face to the mesh
+            faces.Add(newFace);
+
+            // Update the faces lists of the vertices
+            currentVertex.faces.Add(newFace);
+            nextVertex.faces.Add(newFace);
+            newVertex.faces.Add(newFace);
+        }
+
+        // Step 4: Remove the old face
+        // Remove the face from each vertex's faces list
+        foreach (var vertex in face.vertices)
+        {
+            vertex.faces.Remove(face);
+        }
+
+        // Remove the face from the mesh
+        faces.Remove(face);
+
         return;
     }
 
