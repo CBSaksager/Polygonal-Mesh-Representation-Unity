@@ -23,6 +23,16 @@ public class RotationSystem2TesterEditor : Editor
             tester.CreateTetrahedron();
         }
 
+        if (GUILayout.Button("Create Cube"))
+        {
+            tester.CreateCube();
+        }
+
+        if (GUILayout.Button("Create Dodecahedron"))
+        {
+            tester.CreateDodecahedron();
+        }
+
         if (GUILayout.Button("Select Random Edge"))
         {
             tester.SelectRandomEdge();

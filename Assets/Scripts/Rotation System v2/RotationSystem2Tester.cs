@@ -17,6 +17,16 @@ public class RotationSystem2Tester : MonoBehaviour
         rsMesh = RSMesh.CreateTetrahedron();
     }
 
+    public void CreateCube()
+    {
+        rsMesh = RSMesh.CreateCube();
+    }
+
+    public void CreateDodecahedron()
+    {
+        rsMesh = RSMesh.CreateDodecahedron();
+    }
+
     public void ClearMesh()
     {
         rsMesh = null;

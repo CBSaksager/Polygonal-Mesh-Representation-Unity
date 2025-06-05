@@ -201,4 +201,133 @@ public class RSMesh
 
         return mesh;
     }
+
+    public static RSMesh CreateCube()
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        RSMesh mesh = new RSMesh();
+
+        // Define vertices of a dodecahedron
+        mesh.vertices.Add(new RSVertex(new Vector3(1, 1, 1)));      // 0
+        mesh.vertices.Add(new RSVertex(new Vector3(1, 1, -1)));     // 1
+        mesh.vertices.Add(new RSVertex(new Vector3(-1, 1, -1)));    // 2
+        mesh.vertices.Add(new RSVertex(new Vector3(-1, 1, 1)));     // 3
+
+        mesh.vertices.Add(new RSVertex(new Vector3(1, -1, 1)));    // 4
+        mesh.vertices.Add(new RSVertex(new Vector3(1, -1, -1)));     // 5
+        mesh.vertices.Add(new RSVertex(new Vector3(-1, -1, -1)));    // 6
+        mesh.vertices.Add(new RSVertex(new Vector3(-1, -1, 1)));   // 7
+
+        // Define cyclic neighbor lists (rotation systems)
+        mesh.vertices[0].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[0], mesh.vertices[1]), new RSEdge(mesh.vertices[0], mesh.vertices[3]), new RSEdge(mesh.vertices[0], mesh.vertices[4]) });
+        mesh.vertices[1].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[1], mesh.vertices[0]), new RSEdge(mesh.vertices[1], mesh.vertices[2]), new RSEdge(mesh.vertices[1], mesh.vertices[5]) });
+        mesh.vertices[2].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[2], mesh.vertices[1]), new RSEdge(mesh.vertices[2], mesh.vertices[3]), new RSEdge(mesh.vertices[2], mesh.vertices[6]) });
+        mesh.vertices[3].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[3], mesh.vertices[0]), new RSEdge(mesh.vertices[3], mesh.vertices[2]), new RSEdge(mesh.vertices[3], mesh.vertices[7]) });
+        mesh.vertices[4].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[4], mesh.vertices[0]), new RSEdge(mesh.vertices[4], mesh.vertices[5]), new RSEdge(mesh.vertices[4], mesh.vertices[7]) });
+        mesh.vertices[5].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[5], mesh.vertices[1]), new RSEdge(mesh.vertices[5], mesh.vertices[4]), new RSEdge(mesh.vertices[5], mesh.vertices[6]) });
+        mesh.vertices[6].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[6], mesh.vertices[2]), new RSEdge(mesh.vertices[6], mesh.vertices[5]), new RSEdge(mesh.vertices[6], mesh.vertices[7]) });
+        mesh.vertices[7].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[7], mesh.vertices[3]), new RSEdge(mesh.vertices[7], mesh.vertices[4]), new RSEdge(mesh.vertices[7], mesh.vertices[6]) });
+
+        // Define faces based on the PLY file data
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[0], mesh.vertices[1], mesh.vertices[2], mesh.vertices[3] })); // Face 0
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[0], mesh.vertices[1], mesh.vertices[5], mesh.vertices[4] })); // Face 1
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[1], mesh.vertices[2], mesh.vertices[6], mesh.vertices[5] })); // Face 2
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[2], mesh.vertices[3], mesh.vertices[7], mesh.vertices[6] })); // Face 3
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[3], mesh.vertices[0], mesh.vertices[4], mesh.vertices[7] })); // Face 4
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[4], mesh.vertices[5], mesh.vertices[6], mesh.vertices[7] })); // Face 5
+
+        // Assign faces to vertices
+        foreach (var face in mesh.faces)
+        {
+            foreach (var vertex in face.vertices)
+            {
+                vertex.faces.Add(face);
+            }
+        }
+
+        stopwatch.Stop();
+        UnityEngine.Debug.Log($"Rotation System Dodecahedron created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms");
+
+        return mesh;
+    }
+
+    public static RSMesh CreateDodecahedron()
+    {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        RSMesh mesh = new RSMesh();
+
+        // Define vertices of a dodecahedron
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.57735f, -0.57735f, 0.57735f)));       // 0
+        mesh.vertices.Add(new RSVertex(new Vector3(0.934172f, 0.356822f, 0)));              // 1
+        mesh.vertices.Add(new RSVertex(new Vector3(0.934172f, -0.356822f, 0)));             // 2
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.934172f, 0.356822f, 0)));             // 3
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.934172f, -0.356822f, 0)));            // 4
+        mesh.vertices.Add(new RSVertex(new Vector3(0, 0.934172f, 0.356822f)));              // 5
+        mesh.vertices.Add(new RSVertex(new Vector3(0, 0.934172f, -0.356822f)));             // 6
+        mesh.vertices.Add(new RSVertex(new Vector3(0.356822f, 0, -0.934172f)));            // 7
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.356822f, 0, -0.934172f)));             // 8 //
+        mesh.vertices.Add(new RSVertex(new Vector3(0, -0.934172f, -0.356822f)));            // 9
+        mesh.vertices.Add(new RSVertex(new Vector3(0, -0.934172f, 0.356822f)));             // 10
+        mesh.vertices.Add(new RSVertex(new Vector3(0.356822f, 0, 0.934172f)));              // 11
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.356822f, 0, 0.934172f)));             // 12 //
+        mesh.vertices.Add(new RSVertex(new Vector3(0.57735f, 0.57735f, -0.57735f)));        // 13
+        mesh.vertices.Add(new RSVertex(new Vector3(0.57735f, 0.57735f, 0.57735f)));         // 14
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.57735f, 0.57735f, -0.57735f)));       // 15
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.57735f, 0.57735f, 0.57735f)));        // 16
+        mesh.vertices.Add(new RSVertex(new Vector3(0.57735f, -0.57735f, -0.57735f)));       // 17
+        mesh.vertices.Add(new RSVertex(new Vector3(0.57735f, -0.57735f, 0.57735f)));        // 18
+        mesh.vertices.Add(new RSVertex(new Vector3(-0.57735f, -0.57735f, -0.57735f)));      // 19
+
+        // Define cyclic neighbor lists (rotation systems)
+        mesh.vertices[0].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[0], mesh.vertices[4]), new RSEdge(mesh.vertices[0], mesh.vertices[10]), new RSEdge(mesh.vertices[0], mesh.vertices[12]) });
+        mesh.vertices[1].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[1], mesh.vertices[2]), new RSEdge(mesh.vertices[1], mesh.vertices[13]), new RSEdge(mesh.vertices[1], mesh.vertices[14]) });
+        mesh.vertices[2].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[2], mesh.vertices[18]), new RSEdge(mesh.vertices[2], mesh.vertices[1]), new RSEdge(mesh.vertices[2], mesh.vertices[17]) });
+        mesh.vertices[3].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[3], mesh.vertices[4]), new RSEdge(mesh.vertices[3], mesh.vertices[16]), new RSEdge(mesh.vertices[3], mesh.vertices[15]) });
+        mesh.vertices[4].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[4], mesh.vertices[19]), new RSEdge(mesh.vertices[4], mesh.vertices[3]), new RSEdge(mesh.vertices[4], mesh.vertices[0]) });
+        mesh.vertices[5].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[5], mesh.vertices[6]), new RSEdge(mesh.vertices[5], mesh.vertices[14]), new RSEdge(mesh.vertices[5], mesh.vertices[16]) });
+        mesh.vertices[6].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[6], mesh.vertices[5]), new RSEdge(mesh.vertices[6], mesh.vertices[13]), new RSEdge(mesh.vertices[6], mesh.vertices[15]) });
+        mesh.vertices[7].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[7], mesh.vertices[17]), new RSEdge(mesh.vertices[7], mesh.vertices[8]), new RSEdge(mesh.vertices[7], mesh.vertices[13]) });
+        mesh.vertices[8].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[8], mesh.vertices[15]), new RSEdge(mesh.vertices[8], mesh.vertices[19]), new RSEdge(mesh.vertices[8], mesh.vertices[7]) });
+        mesh.vertices[9].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[9], mesh.vertices[10]), new RSEdge(mesh.vertices[9], mesh.vertices[19]), new RSEdge(mesh.vertices[9], mesh.vertices[17]) });
+        mesh.vertices[10].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[10], mesh.vertices[18]), new RSEdge(mesh.vertices[10], mesh.vertices[9]), new RSEdge(mesh.vertices[10], mesh.vertices[0]) });
+        mesh.vertices[11].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[11], mesh.vertices[14]), new RSEdge(mesh.vertices[11], mesh.vertices[12]), new RSEdge(mesh.vertices[11], mesh.vertices[18]) });
+        mesh.vertices[12].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[12], mesh.vertices[0]), new RSEdge(mesh.vertices[12], mesh.vertices[16]), new RSEdge(mesh.vertices[12], mesh.vertices[11]) });
+        mesh.vertices[13].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[13], mesh.vertices[7]), new RSEdge(mesh.vertices[13], mesh.vertices[1]), new RSEdge(mesh.vertices[13], mesh.vertices[6]) });
+        mesh.vertices[14].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[14], mesh.vertices[1]), new RSEdge(mesh.vertices[14], mesh.vertices[5]), new RSEdge(mesh.vertices[14], mesh.vertices[11]) });
+        mesh.vertices[15].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[15], mesh.vertices[3]), new RSEdge(mesh.vertices[15], mesh.vertices[6]), new RSEdge(mesh.vertices[15], mesh.vertices[8]) });
+        mesh.vertices[16].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[16], mesh.vertices[12]), new RSEdge(mesh.vertices[16], mesh.vertices[3]), new RSEdge(mesh.vertices[16], mesh.vertices[5]) });
+        mesh.vertices[17].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[17], mesh.vertices[2]), new RSEdge(mesh.vertices[17], mesh.vertices[9]), new RSEdge(mesh.vertices[17], mesh.vertices[7]) });
+        mesh.vertices[18].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[18], mesh.vertices[11]), new RSEdge(mesh.vertices[18], mesh.vertices[2]), new RSEdge(mesh.vertices[18], mesh.vertices[10]) });
+        mesh.vertices[19].edges.AddRange(new List<RSEdge> { new RSEdge(mesh.vertices[19], mesh.vertices[8]), new RSEdge(mesh.vertices[19], mesh.vertices[4]), new RSEdge(mesh.vertices[19], mesh.vertices[9]) });
+
+        // Define faces based on the PLY file data
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[1], mesh.vertices[2], mesh.vertices[18], mesh.vertices[11], mesh.vertices[14] })); // Face 0
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[1], mesh.vertices[13], mesh.vertices[7], mesh.vertices[17], mesh.vertices[2] })); // Face 1
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[3], mesh.vertices[4], mesh.vertices[19], mesh.vertices[8], mesh.vertices[15] })); // Face 2
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[3], mesh.vertices[16], mesh.vertices[12], mesh.vertices[0], mesh.vertices[4] })); // Face 3
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[3], mesh.vertices[15], mesh.vertices[6], mesh.vertices[5], mesh.vertices[16] })); // Face 4
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[1], mesh.vertices[14], mesh.vertices[5], mesh.vertices[6], mesh.vertices[13] })); // Face 5
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[2], mesh.vertices[17], mesh.vertices[9], mesh.vertices[10], mesh.vertices[18] })); // Face 6
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[4], mesh.vertices[0], mesh.vertices[10], mesh.vertices[9], mesh.vertices[19] })); // Face 7
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[7], mesh.vertices[8], mesh.vertices[19], mesh.vertices[9], mesh.vertices[17] })); // Face 8
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[6], mesh.vertices[15], mesh.vertices[8], mesh.vertices[7], mesh.vertices[13] })); // Face 9
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[5], mesh.vertices[14], mesh.vertices[11], mesh.vertices[12], mesh.vertices[16] })); // Face 10
+        mesh.faces.Add(new RSFace(new List<RSVertex> { mesh.vertices[10], mesh.vertices[0], mesh.vertices[12], mesh.vertices[11], mesh.vertices[18] })); // Face 11
+
+        // Assign faces to vertices
+        foreach (var face in mesh.faces)
+        {
+            foreach (var vertex in face.vertices)
+            {
+                vertex.faces.Add(face);
+            }
+        }
+        stopwatch.Stop();
+        UnityEngine.Debug.Log($"Rotation System Dodecahedron created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms");
+        return mesh;
+    }
 }
