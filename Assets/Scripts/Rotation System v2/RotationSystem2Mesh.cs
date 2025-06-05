@@ -77,6 +77,9 @@ public class RSMesh
 
     public void SplitFace(RSFace face)
     {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         // Step 1: Create a new vertex at the centroid of the face
         Vector3 centroid = Vector3.zero;
         foreach (var vertex in face.vertices)
@@ -152,6 +155,9 @@ public class RSMesh
 
         // Remove the face from the mesh
         faces.Remove(face);
+
+        stopwatch.Stop();
+        UnityEngine.Debug.Log($"Rotation System Face Split completed in {stopwatch.Elapsed.TotalMilliseconds:F4} ms");
 
         return;
     }
