@@ -13,6 +13,14 @@ public class RotationSystem2TesterEditor : Editor
 
         RotationSystem2Tester tester = (RotationSystem2Tester)target;
 
+        // Add Import PLY button at the top
+        EditorGUILayout.Space();
+        if (GUILayout.Button("Import PLY File"))
+        {
+            tester.ImportPLYFile();
+        }
+        EditorGUILayout.Space();
+
         if (GUILayout.Button("Clear Mesh"))
         {
             tester.ClearMesh();
@@ -36,6 +44,11 @@ public class RotationSystem2TesterEditor : Editor
         if (GUILayout.Button("Select Random Edge"))
         {
             tester.SelectRandomEdge();
+        }
+
+        if (GUILayout.Button("Iota"))
+        {
+            tester.Iota();
         }
 
         if (GUILayout.Button("Next Edge of Vertex"))
@@ -66,6 +79,11 @@ public class RotationSystem2TesterEditor : Editor
                 tester.SelectRandomFace();
                 tester.SplitFace();
             }
+        }
+
+        if (GUILayout.Button("Validate Rotation System"))
+        {
+            tester.ValidateRotationSystem();
         }
 
         SceneView.RepaintAll(); // Force Scene to refresh the Gizmos

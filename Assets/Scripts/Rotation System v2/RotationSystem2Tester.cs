@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
+using System.IO;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -47,6 +48,19 @@ public class RotationSystem2Tester : MonoBehaviour
         {
             Debug.Log($"Selected Edge: {selectedEdge.from.position} -> {selectedEdge.to.position}");
         }
+    }
+
+    public void Iota()
+    {
+        if (selectedEdge == null)
+        {
+            Debug.LogError("No edge selected.");
+            return;
+        }
+
+        // Select the next edge of the vertex
+        selectedEdge = rsMesh.Iota(selectedEdge);
+        Debug.Log($"Selected Next Edge of Vertex: {selectedEdge.from.position} -> {selectedEdge.to.position}");
     }
 
     public void SelectNextEdgeOfVertex()
@@ -116,6 +130,104 @@ public class RotationSystem2Tester : MonoBehaviour
 
         // Clear the selected face as it no longer exists after splitting
         selectedFace = null;
+    }
+
+    public void ImportPLYFile()
+    {
+#if UNITY_EDITOR
+        string filePath = EditorUtility.OpenFilePanel("Import PLY file", "", "ply");
+        if (!string.IsNullOrEmpty(filePath))
+        {
+            rsMesh = RSMesh.ImportFromPLY(filePath);
+            if (rsMesh != null)
+            {
+                selectedEdge = null;
+                selectedFace = null;
+                Debug.Log($"Imported PLY file with {rsMesh.vertices.Count} vertices and {rsMesh.faces.Count} faces");
+            }
+            else
+            {
+                Debug.LogError("Failed to import PLY file");
+            }
+        }
+#endif
+    }
+
+    public void ValidateRotationSystem()
+    {
+        if (rsMesh == null)
+        {
+            Debug.LogError("No mesh to validate.");
+            return;
+        }
+
+        int faceTraversalErrors = 0;
+        int edgeConsistencyErrors = 0;
+
+        // Validate face traversal
+        foreach (var face in rsMesh.faces)
+        {
+            for (int i = 0; i < face.vertices.Count; i++)
+            {
+                var v1 = face.vertices[i];
+                var v2 = face.vertices[(i + 1) % face.vertices.Count];
+                var v3 = face.vertices[(i + 2) % face.vertices.Count];
+
+                // Find the edge v1->v2
+                RSEdge edge = null;
+                foreach (var e in v1.edges)
+                {
+                    if (e.to == v2)
+                    {
+                        edge = e;
+                        break;
+                    }
+                }
+
+                if (edge != null)
+                {
+                    // Apply Tau (face traversal) and check if we get to v3
+                    var nextEdge = rsMesh.Tau(edge);
+                    if (nextEdge.from != v2 || nextEdge.to != v3)
+                    {
+                        faceTraversalErrors++;
+                        Debug.LogError($"Face traversal error: Expected {v2.position}->{v3.position}, got {nextEdge.from.position}->{nextEdge.to.position}");
+                    }
+                }
+            }
+        }
+
+        // Check edge consistency
+        foreach (var vertex in rsMesh.vertices)
+        {
+            foreach (var edge in vertex.edges)
+            {
+                bool foundReverse = false;
+                foreach (var otherEdge in edge.to.edges)
+                {
+                    if (otherEdge.to == vertex)
+                    {
+                        foundReverse = true;
+                        break;
+                    }
+                }
+
+                if (!foundReverse)
+                {
+                    edgeConsistencyErrors++;
+                    Debug.LogError($"Edge consistency error: No reverse edge for {edge.from.position}->{edge.to.position}");
+                }
+            }
+        }
+
+        if (faceTraversalErrors == 0 && edgeConsistencyErrors == 0)
+        {
+            Debug.Log("Rotation system validation passed successfully!");
+        }
+        else
+        {
+            Debug.LogError($"Validation found {faceTraversalErrors} face traversal errors and {edgeConsistencyErrors} edge consistency errors.");
+        }
     }
 
 #if UNITY_EDITOR
