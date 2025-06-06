@@ -4,13 +4,17 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 **Rotation System**
 - [ ] Fix face split to avoid duplicates
     - [ ] Fix the temp solution to random selection of face
+        - When selecting a face it sometimes selects two vertices that *legally* is not on the same face
 - [ ] Highlight selected face
 
-**Half Edge**
+**Half-Edge**
 - [x] Highlight selected face
 - [x] Finish split face
     - [ ? ] Insert edges o_O
 - [ ] Organize code files
+- [ ] AddFace upgrade to handle more than just 3 vertices
+- [ ] Create stopwatches correct places
+- [ ] Mass face split testing to exported document
 
 **Overall**
 - [ ] *Clear mesh* buttons needs to reset all data (right now not resetting selected face)

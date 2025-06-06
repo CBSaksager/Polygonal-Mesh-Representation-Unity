@@ -6,6 +6,8 @@ using UnityEditor.SearchService;
 [CustomEditor(typeof(HalfEdgeTester))]
 public class HalfEdgeTesterEditor : Editor
 {
+    private int numberOfTests = 10; // Default value for the number of tests
+
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -22,7 +24,6 @@ public class HalfEdgeTesterEditor : Editor
             tester.ClearMesh();
 
             stopwatch.Stop();
-            UnityEngine.Debug.Log($"Mesh cleared in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
         }
 
         if (GUILayout.Button("Select Random Face"))
@@ -45,6 +46,16 @@ public class HalfEdgeTesterEditor : Editor
         {
             tester.SelectRandomFace();
             tester.SplitFace();
+        }
+
+        numberOfTests = EditorGUILayout.IntField("Number of Tests", numberOfTests);
+        if (GUILayout.Button("Mass Test Split Face"))
+        {
+            for (int i = 0; i < numberOfTests; i++)
+            {
+                tester.SelectRandomFace();
+                tester.SplitFace();
+            }
         }
 
         // Future shapes here:

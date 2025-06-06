@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -39,6 +41,7 @@ public class RotationSystemTester : MonoBehaviour
 
     public void ClearMesh()
     {
+        selectedFace = null;
         rsMesh = null;
         selectedFace = null;
     }
@@ -80,7 +83,7 @@ public class RotationSystemTester : MonoBehaviour
             }
         }
 
-        // Draw selected face in red
+        // Draw the selected face in red
         if (selectedFace != null && selectedFace.Count >= 3)
         {
             Handles.color = Color.red;
@@ -92,11 +95,10 @@ public class RotationSystemTester : MonoBehaviour
                 Vector3 mid = (from + to) * 0.5f;
                 Vector3 dir = (to - from).normalized;
 
-                Handles.DrawAAPolyLine(3.5f, from, to);
-                Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), 0.15f, EventType.Repaint);
+                Handles.DrawAAPolyLine(2.5f, from, to);
+                Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), 0.1f, EventType.Repaint);
             }
         }
-
     }
 #endif
 

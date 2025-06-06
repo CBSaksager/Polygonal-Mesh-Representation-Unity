@@ -34,7 +34,8 @@ public class RsMesh
         return mesh;
     }
 
-    public List<RsVertex> SelectRandomFace(){ 
+    public List<RsVertex> SelectRandomFace()
+    {
         /*
         This just selects a random vertex and its neighbors
         This does not form a face!!! 
@@ -46,15 +47,16 @@ public class RsMesh
         }
         int randomIndex = Random.Range(0, vertices.Count);
         RsVertex selectedVertex = vertices[randomIndex];
-        List<RsVertex> faceVertices = new List<RsVertex>();
-        faceVertices.Add(selectedVertex);
-        
-        foreach (int neighborIndex in selectedVertex.neighbors)
+        List<RsVertex> faceVertices = new List<RsVertex>
         {
-            faceVertices.Add(vertices[neighborIndex]);
-        }
-        // Temp removal of last vertex
-        faceVertices.RemoveAt(faceVertices.Count - 1);
+            selectedVertex
+        };
+
+        GetCyclicNeighbors(selectedVertex).ForEach(v =>
+        {
+            faceVertices.Add(v);
+        });
+
         return faceVertices;
     }
 
@@ -76,8 +78,8 @@ public class RsMesh
         {
             UnityEngine.Debug.LogWarning("Invalid vertex indices for splitting the face.");
             return;
-            }
-    
+        }
+
         Vector3 posA = rsMesh.vertices[v1].position;
         Vector3 posB = rsMesh.vertices[v2].position;
         Vector3 posC = rsMesh.vertices[v3].position;
@@ -96,7 +98,6 @@ public class RsMesh
         InsertAfterNeighbor(rsMesh.vertices[v3], v2, vIndex);
     }
 
-    
     private void InsertAfterNeighbor(RsVertex v, int after, int insert)
     {
         int i = v.neighbors.IndexOf(after);
@@ -104,6 +105,20 @@ public class RsMesh
         {
             v.neighbors.Insert((i + 1) % (v.neighbors.Count + 1), insert);
         }
+    }
+
+    public List<RsVertex> GetCyclicNeighbors(RsVertex vertex)
+    {
+        List<RsVertex> cyclicNeighbors = new List<RsVertex>();
+        int startIndex = vertices.IndexOf(vertex);
+        if (startIndex == -1) return cyclicNeighbors;
+
+        for (int i = 1; i < 3; i++)
+        {
+            int neighborIndex = vertex.neighbors[(startIndex + i) % vertex.neighbors.Count];
+            cyclicNeighbors.Add(vertices[neighborIndex]);
+        }
+        return cyclicNeighbors;
     }
 
     private int EstimateFaceCount()
