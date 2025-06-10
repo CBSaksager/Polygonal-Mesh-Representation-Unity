@@ -60,7 +60,7 @@ public class HalfEdgeTester : MonoBehaviour
         hem.SplitFace(selectedFace);
 
         stopwatch.Stop();
-        File.AppendAllText("Assets/Test results/test1.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} ms. \n");
+        File.AppendAllText("Assets/Tests/HEFaceSplitOnOne.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
     }
 
     public void CreateTetrahedron()
