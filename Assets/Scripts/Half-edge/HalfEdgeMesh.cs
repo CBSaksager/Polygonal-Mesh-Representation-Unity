@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using UnityEngine;
 
 public class HalfEdgeMesh
@@ -80,6 +82,9 @@ public class HalfEdgeMesh
 
     public void SplitFace(HEFace face)
     {
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
         if (face == null) return;
         List<HEVertex> vertices = VerticesOfFace(face);
         if (vertices == null || vertices.Count < 3) return; // Ensure we have at least 3 vertices
@@ -114,6 +119,10 @@ public class HalfEdgeMesh
 
         // Step 4: Remove the original face from the mesh
         faces.Remove(face);
+
+        stopwatch.Stop();
+        File.AppendAllText("Assets/Tests/HEFaceSplit.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
+
     }
 
     public string EdgeToString(HEHalfEdge edge)

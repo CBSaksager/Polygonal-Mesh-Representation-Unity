@@ -54,13 +54,8 @@ public class HalfEdgeTester : MonoBehaviour
             UnityEngine.Debug.LogWarning("No face selected or mesh is null.");
             return;
         }
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
 
         hem.SplitFace(selectedFace);
-
-        stopwatch.Stop();
-        File.AppendAllText("Assets/Tests/HEFaceSplitOnOne.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
     }
 
     public void CreateTetrahedron()
