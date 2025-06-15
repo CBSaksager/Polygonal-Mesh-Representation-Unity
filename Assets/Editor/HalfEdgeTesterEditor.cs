@@ -57,6 +57,21 @@ public class HalfEdgeTesterEditor : Editor
             tester.CreateHexagon();
         }
 
+        if (GUILayout.Button("Create Septa"))
+        {
+            tester.CreateSeptagon();
+        }
+
+        if (GUILayout.Button("Create Octa"))
+        {
+            tester.CreateOctagon();
+        }
+
+        if (GUILayout.Button("Create  Nona"))
+        {
+            tester.CreateNonagon();
+        }
+
         if (GUILayout.Button("Face Split"))
         {
             tester.SelectRandomFace();

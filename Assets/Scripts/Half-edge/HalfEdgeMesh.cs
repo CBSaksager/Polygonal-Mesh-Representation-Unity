@@ -121,7 +121,7 @@ public class HalfEdgeMesh
         faces.Remove(face);
 
         stopwatch.Stop();
-        File.AppendAllText("Assets/Tests/HEFaceSplitHexa.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
+        File.AppendAllText("Assets/Tests/HEFaceSplitNona.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
 
     }
 
@@ -484,6 +484,267 @@ public class HalfEdgeMesh
         hem.TrySetTwin(v3, v4, he3);
         hem.TrySetTwin(v4, v5, he4);
         hem.TrySetTwin(v5, v0, he5);
+
+        return hem;
+    }
+
+    public static HalfEdgeMesh CreateSeptagon()
+    {
+        var hem = new HalfEdgeMesh();
+
+        // Define 7 vertices of a regular septagon
+        float radius = 1.0f;
+        float angle = 2 * Mathf.PI / 7; // ~51.43 degrees in radians
+
+        var v0 = new HEVertex(new Vector3(radius * Mathf.Sin(0 * angle), radius * Mathf.Cos(0 * angle), 0));
+        var v1 = new HEVertex(new Vector3(radius * Mathf.Sin(1 * angle), radius * Mathf.Cos(1 * angle), 0));
+        var v2 = new HEVertex(new Vector3(radius * Mathf.Sin(2 * angle), radius * Mathf.Cos(2 * angle), 0));
+        var v3 = new HEVertex(new Vector3(radius * Mathf.Sin(3 * angle), radius * Mathf.Cos(3 * angle), 0));
+        var v4 = new HEVertex(new Vector3(radius * Mathf.Sin(4 * angle), radius * Mathf.Cos(4 * angle), 0));
+        var v5 = new HEVertex(new Vector3(radius * Mathf.Sin(5 * angle), radius * Mathf.Cos(5 * angle), 0));
+        var v6 = new HEVertex(new Vector3(radius * Mathf.Sin(6 * angle), radius * Mathf.Cos(6 * angle), 0));
+
+        hem.vertices.AddRange(new[] { v0, v1, v2, v3, v4, v5, v6 });
+
+        // Create septagon face
+        HEHalfEdge he0 = new HEHalfEdge { vertex = v0 };
+        HEHalfEdge he1 = new HEHalfEdge { vertex = v1 };
+        HEHalfEdge he2 = new HEHalfEdge { vertex = v2 };
+        HEHalfEdge he3 = new HEHalfEdge { vertex = v3 };
+        HEHalfEdge he4 = new HEHalfEdge { vertex = v4 };
+        HEHalfEdge he5 = new HEHalfEdge { vertex = v5 };
+        HEHalfEdge he6 = new HEHalfEdge { vertex = v6 };
+
+        // Set next relationships
+        he0.next = he1;
+        he1.next = he2;
+        he2.next = he3;
+        he3.next = he4;
+        he4.next = he5;
+        he5.next = he6;
+        he6.next = he0;
+
+        // Set origin vertices for each half-edge
+        he0.origin = v0;
+        he1.origin = v1;
+        he2.origin = v2;
+        he3.origin = v3;
+        he4.origin = v4;
+        he5.origin = v5;
+        he6.origin = v6;
+
+        // Create face and link it
+        HEFace face = new HEFace { edge = he0 };
+        he0.face = face;
+        he1.face = face;
+        he2.face = face;
+        he3.face = face;
+        he4.face = face;
+        he5.face = face;
+        he6.face = face;
+
+        // Register in mesh
+        hem.halfEdges.AddRange(new[] { he0, he1, he2, he3, he4, he5, he6 });
+        hem.faces.Add(face);
+
+        // Assign one outgoing edge to each vertex
+        v0.outgoing = he0;
+        v1.outgoing = he1;
+        v2.outgoing = he2;
+        v3.outgoing = he3;
+        v4.outgoing = he4;
+        v5.outgoing = he5;
+        v6.outgoing = he6;
+
+        // Set up twin relationships
+        hem.TrySetTwin(v0, v1, he0);
+        hem.TrySetTwin(v1, v2, he1);
+        hem.TrySetTwin(v2, v3, he2);
+        hem.TrySetTwin(v3, v4, he3);
+        hem.TrySetTwin(v4, v5, he4);
+        hem.TrySetTwin(v5, v6, he5);
+        hem.TrySetTwin(v6, v0, he6);
+
+        return hem;
+    }
+
+    public static HalfEdgeMesh CreateOctagon()
+    {
+        var hem = new HalfEdgeMesh();
+
+        // Define 8 vertices of a regular octagon
+        float radius = 1.0f;
+        float angle = 2 * Mathf.PI / 8; // 45 degrees in radians
+
+        var v0 = new HEVertex(new Vector3(radius * Mathf.Sin(0 * angle), radius * Mathf.Cos(0 * angle), 0));
+        var v1 = new HEVertex(new Vector3(radius * Mathf.Sin(1 * angle), radius * Mathf.Cos(1 * angle), 0));
+        var v2 = new HEVertex(new Vector3(radius * Mathf.Sin(2 * angle), radius * Mathf.Cos(2 * angle), 0));
+        var v3 = new HEVertex(new Vector3(radius * Mathf.Sin(3 * angle), radius * Mathf.Cos(3 * angle), 0));
+        var v4 = new HEVertex(new Vector3(radius * Mathf.Sin(4 * angle), radius * Mathf.Cos(4 * angle), 0));
+        var v5 = new HEVertex(new Vector3(radius * Mathf.Sin(5 * angle), radius * Mathf.Cos(5 * angle), 0));
+        var v6 = new HEVertex(new Vector3(radius * Mathf.Sin(6 * angle), radius * Mathf.Cos(6 * angle), 0));
+        var v7 = new HEVertex(new Vector3(radius * Mathf.Sin(7 * angle), radius * Mathf.Cos(7 * angle), 0));
+
+        hem.vertices.AddRange(new[] { v0, v1, v2, v3, v4, v5, v6, v7 });
+
+        // Create octagon face
+        HEHalfEdge he0 = new HEHalfEdge { vertex = v0 };
+        HEHalfEdge he1 = new HEHalfEdge { vertex = v1 };
+        HEHalfEdge he2 = new HEHalfEdge { vertex = v2 };
+        HEHalfEdge he3 = new HEHalfEdge { vertex = v3 };
+        HEHalfEdge he4 = new HEHalfEdge { vertex = v4 };
+        HEHalfEdge he5 = new HEHalfEdge { vertex = v5 };
+        HEHalfEdge he6 = new HEHalfEdge { vertex = v6 };
+        HEHalfEdge he7 = new HEHalfEdge { vertex = v7 };
+
+        // Set next relationships
+        he0.next = he1;
+        he1.next = he2;
+        he2.next = he3;
+        he3.next = he4;
+        he4.next = he5;
+        he5.next = he6;
+        he6.next = he7;
+        he7.next = he0;
+
+        // Set origin vertices for each half-edge
+        he0.origin = v0;
+        he1.origin = v1;
+        he2.origin = v2;
+        he3.origin = v3;
+        he4.origin = v4;
+        he5.origin = v5;
+        he6.origin = v6;
+        he7.origin = v7;
+
+        // Create face and link it
+        HEFace face = new HEFace { edge = he0 };
+        he0.face = face;
+        he1.face = face;
+        he2.face = face;
+        he3.face = face;
+        he4.face = face;
+        he5.face = face;
+        he6.face = face;
+        he7.face = face;
+
+        // Register in mesh
+        hem.halfEdges.AddRange(new[] { he0, he1, he2, he3, he4, he5, he6, he7 });
+        hem.faces.Add(face);
+
+        // Assign one outgoing edge to each vertex
+        v0.outgoing = he0;
+        v1.outgoing = he1;
+        v2.outgoing = he2;
+        v3.outgoing = he3;
+        v4.outgoing = he4;
+        v5.outgoing = he5;
+        v6.outgoing = he6;
+        v7.outgoing = he7;
+
+        // Set up twin relationships
+        hem.TrySetTwin(v0, v1, he0);
+        hem.TrySetTwin(v1, v2, he1);
+        hem.TrySetTwin(v2, v3, he2);
+        hem.TrySetTwin(v3, v4, he3);
+        hem.TrySetTwin(v4, v5, he4);
+        hem.TrySetTwin(v5, v6, he5);
+        hem.TrySetTwin(v6, v7, he6);
+        hem.TrySetTwin(v7, v0, he7);
+
+        return hem;
+    }
+
+    public static HalfEdgeMesh CreateNonagon()
+    {
+        var hem = new HalfEdgeMesh();
+
+        // Define 9 vertices of a regular nonagon
+        float radius = 1.0f;
+        float angle = 2 * Mathf.PI / 9; // 40 degrees in radians
+
+        var v0 = new HEVertex(new Vector3(radius * Mathf.Sin(0 * angle), radius * Mathf.Cos(0 * angle), 0));
+        var v1 = new HEVertex(new Vector3(radius * Mathf.Sin(1 * angle), radius * Mathf.Cos(1 * angle), 0));
+        var v2 = new HEVertex(new Vector3(radius * Mathf.Sin(2 * angle), radius * Mathf.Cos(2 * angle), 0));
+        var v3 = new HEVertex(new Vector3(radius * Mathf.Sin(3 * angle), radius * Mathf.Cos(3 * angle), 0));
+        var v4 = new HEVertex(new Vector3(radius * Mathf.Sin(4 * angle), radius * Mathf.Cos(4 * angle), 0));
+        var v5 = new HEVertex(new Vector3(radius * Mathf.Sin(5 * angle), radius * Mathf.Cos(5 * angle), 0));
+        var v6 = new HEVertex(new Vector3(radius * Mathf.Sin(6 * angle), radius * Mathf.Cos(6 * angle), 0));
+        var v7 = new HEVertex(new Vector3(radius * Mathf.Sin(7 * angle), radius * Mathf.Cos(7 * angle), 0));
+        var v8 = new HEVertex(new Vector3(radius * Mathf.Sin(8 * angle), radius * Mathf.Cos(8 * angle), 0));
+
+        hem.vertices.AddRange(new[] { v0, v1, v2, v3, v4, v5, v6, v7, v8 });
+
+        // Create nonagon face
+        HEHalfEdge he0 = new HEHalfEdge { vertex = v0 };
+        HEHalfEdge he1 = new HEHalfEdge { vertex = v1 };
+        HEHalfEdge he2 = new HEHalfEdge { vertex = v2 };
+        HEHalfEdge he3 = new HEHalfEdge { vertex = v3 };
+        HEHalfEdge he4 = new HEHalfEdge { vertex = v4 };
+        HEHalfEdge he5 = new HEHalfEdge { vertex = v5 };
+        HEHalfEdge he6 = new HEHalfEdge { vertex = v6 };
+        HEHalfEdge he7 = new HEHalfEdge { vertex = v7 };
+        HEHalfEdge he8 = new HEHalfEdge { vertex = v8 };
+
+        // Set next relationships
+        he0.next = he1;
+        he1.next = he2;
+        he2.next = he3;
+        he3.next = he4;
+        he4.next = he5;
+        he5.next = he6;
+        he6.next = he7;
+        he7.next = he8;
+        he8.next = he0;
+
+        // Set origin vertices for each half-edge
+        he0.origin = v0;
+        he1.origin = v1;
+        he2.origin = v2;
+        he3.origin = v3;
+        he4.origin = v4;
+        he5.origin = v5;
+        he6.origin = v6;
+        he7.origin = v7;
+        he8.origin = v8;
+
+        // Create face and link it
+        HEFace face = new HEFace { edge = he0 };
+        he0.face = face;
+        he1.face = face;
+        he2.face = face;
+        he3.face = face;
+        he4.face = face;
+        he5.face = face;
+        he6.face = face;
+        he7.face = face;
+        he8.face = face;
+
+        // Register in mesh
+        hem.halfEdges.AddRange(new[] { he0, he1, he2, he3, he4, he5, he6, he7, he8 });
+        hem.faces.Add(face);
+
+        // Assign one outgoing edge to each vertex
+        v0.outgoing = he0;
+        v1.outgoing = he1;
+        v2.outgoing = he2;
+        v3.outgoing = he3;
+        v4.outgoing = he4;
+        v5.outgoing = he5;
+        v6.outgoing = he6;
+        v7.outgoing = he7;
+        v8.outgoing = he8;
+
+        // Set up twin relationships
+        hem.TrySetTwin(v0, v1, he0);
+        hem.TrySetTwin(v1, v2, he1);
+        hem.TrySetTwin(v2, v3, he2);
+        hem.TrySetTwin(v3, v4, he3);
+        hem.TrySetTwin(v4, v5, he4);
+        hem.TrySetTwin(v5, v6, he5);
+        hem.TrySetTwin(v6, v7, he6);
+        hem.TrySetTwin(v7, v8, he7);
+        hem.TrySetTwin(v8, v0, he8);
 
         return hem;
     }
