@@ -65,6 +65,27 @@ public class HalfEdgeTester : MonoBehaviour
         UpdateUnityMesh();
     }
 
+    public void CreateQuad()
+    {
+        selectedFace = null;
+        hem = HalfEdgeMesh.CreateQuad();
+        UpdateUnityMesh();
+    }
+
+    public void CreatePentagon()
+    {
+        selectedFace = null;
+        hem = HalfEdgeMesh.CreatePentagon();
+        UpdateUnityMesh();
+    }
+
+    public void CreateHexagon()
+    {
+        selectedFace = null;
+        hem = HalfEdgeMesh.CreateHexagon();
+        UpdateUnityMesh();
+    }
+
     private void UpdateUnityMesh()
     {
         if (hem == null) return;

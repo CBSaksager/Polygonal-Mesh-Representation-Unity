@@ -42,6 +42,21 @@ public class HalfEdgeTesterEditor : Editor
             UnityEngine.Debug.Log($"Tetrahedron created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
         }
 
+        if (GUILayout.Button("Create Quad"))
+        {
+            tester.CreateQuad();
+        }
+
+        if (GUILayout.Button("Create Penta"))
+        {
+            tester.CreatePentagon();
+        }
+
+        if (GUILayout.Button("Create Hexa"))
+        {
+            tester.CreateHexagon();
+        }
+
         if (GUILayout.Button("Face Split"))
         {
             tester.SelectRandomFace();
