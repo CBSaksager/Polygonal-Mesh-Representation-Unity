@@ -6,7 +6,6 @@ using UnityEngine;
 public class RsMesh
 {
     public List<RsVertex> vertices = new List<RsVertex>();
-    public int FaceCount => EstimateFaceCount();
 
     public RsMesh() { }
 
@@ -119,12 +118,6 @@ public class RsMesh
             cyclicNeighbors.Add(vertices[neighborIndex]);
         }
         return cyclicNeighbors;
-    }
-
-    private int EstimateFaceCount()
-    {
-        // Euler's formula estimation can go here if needed
-        return 0; // placeholder
     }
 
 }
