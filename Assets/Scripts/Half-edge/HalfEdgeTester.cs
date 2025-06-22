@@ -62,57 +62,44 @@ public class HalfEdgeTester : MonoBehaviour
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreateTetrahedron();
-        UpdateUnityMesh();
     }
 
     public void CreateQuad()
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreateQuad();
-        UpdateUnityMesh();
     }
 
     public void CreatePentagon()
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreatePentagon();
-        UpdateUnityMesh();
     }
 
     public void CreateHexagon()
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreateHexagon();
-        UpdateUnityMesh();
     }
 
     public void CreateSeptagon()
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreateSeptagon();
-        UpdateUnityMesh();
     }
 
     public void CreateOctagon()
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreateOctagon();
-        UpdateUnityMesh();
     }
 
     public void CreateNonagon()
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreateNonagon();
-        UpdateUnityMesh();
     }
 
-    private void UpdateUnityMesh()
-    {
-        if (hem == null) return;
-        var mesh = hem.ToUnityMesh();
-        GetComponent<MeshFilter>().sharedMesh = mesh;
-    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmos()

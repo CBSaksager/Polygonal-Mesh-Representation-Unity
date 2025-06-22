@@ -9,7 +9,7 @@ public class HalfEdgeMesh
     public List<HEHalfEdge> halfEdges = new List<HEHalfEdge>();
     public List<HEFace> faces = new List<HEFace>();
 
-    // Internal mapping to track edge pairs for twin linking
+    // Internal mapping to track edge pairs for twin linking. Used for stitching edges together.
     private Dictionary<(int, int), HEHalfEdge> edgeMap = new Dictionary<(int, int), HEHalfEdge>();
 
     public HEVertex AddVertex(Vector3 position)
@@ -143,36 +143,25 @@ public class HalfEdgeMesh
         return $"{EdgeToString(face.edge)}";
     }
 
-    /// <summary>
-    /// Builds a HalfEdgeMesh from a Unity Mesh.
-    /// </summary>
-    public static HalfEdgeMesh FromUnityMesh(Mesh mesh)
+    // Helper function that links a half-edge with its twin if the opposite edge already exists.
+    private void TrySetTwin(HEVertex from, HEVertex to, HEHalfEdge edge)
     {
-        var hem = new HalfEdgeMesh();
-        Vector3[] meshVerts = mesh.vertices;
-        int[] meshTris = mesh.triangles;
+        int fromIndex = vertices.IndexOf(from);
+        int toIndex = vertices.IndexOf(to);
+        var key = (fromIndex, toIndex);
+        var twinKey = (toIndex, fromIndex);
 
-        // Create vertices
-        for (int i = 0; i < meshVerts.Length; i++)
+        edgeMap[key] = edge;
+
+        if (edgeMap.TryGetValue(twinKey, out HEHalfEdge twin))
         {
-            hem.vertices.Add(new HEVertex(meshVerts[i]));
+            edge.twin = twin;
+            twin.twin = edge;
         }
-
-        // Process triangles
-        for (int i = 0; i < meshTris.Length; i += 3)
-        {
-            HEVertex v0 = hem.vertices[meshTris[i]];
-            HEVertex v1 = hem.vertices[meshTris[i + 1]];
-            HEVertex v2 = hem.vertices[meshTris[i + 2]];
-            hem.AddFace(v0, v1, v2);
-        }
-
-        return hem;
     }
 
-    /// <summary>
-    /// Converts the current HalfEdgeMesh back into a Unity Mesh.
-    /// </summary>
+    // Converts the current HalfEdgeMesh back into a Unity Mesh.
+    // Old unused code. Was used for the abandoned PLY importer. 
     public Mesh ToUnityMesh()
     {
         Mesh mesh = new Mesh();
@@ -203,25 +192,6 @@ public class HalfEdgeMesh
         return mesh;
     }
 
-    /// <summary>
-    /// Links a half-edge with its twin if the opposite edge already exists.
-    /// </summary>
-    private void TrySetTwin(HEVertex from, HEVertex to, HEHalfEdge edge)
-    {
-        int fromIndex = vertices.IndexOf(from);
-        int toIndex = vertices.IndexOf(to);
-        var key = (fromIndex, toIndex);
-        var twinKey = (toIndex, fromIndex);
-
-        edgeMap[key] = edge;
-
-        if (edgeMap.TryGetValue(twinKey, out HEHalfEdge twin))
-        {
-            edge.twin = twin;
-            twin.twin = edge;
-        }
-    }
-
     public static HalfEdgeMesh FromPlyData(List<Vector3> verts, List<int[]> faceIndices)
     {
         var hem = new HalfEdgeMesh();
@@ -243,6 +213,10 @@ public class HalfEdgeMesh
 
         return hem;
     }
+
+    /*
+    From here and down is the code for creating some simple mesh shapes.
+    */
 
     public static HalfEdgeMesh CreateTetrahedron()
     {
