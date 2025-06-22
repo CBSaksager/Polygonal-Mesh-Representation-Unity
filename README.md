@@ -5,7 +5,7 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 - [ ] Fix face split to avoid duplicates
     - [ ] Fix the temp solution to random selection of face
         - When selecting a face it sometimes selects two vertices that *legally* is not on the same face
-- [ ] Highlight selected face
+- [x] Highlight selected face
 
 **Half-Edge**
 - [x] Highlight selected face
@@ -17,5 +17,5 @@ Polygon meshes are fundamental data structures in computer graphics, widely used
 - [ ] Mass face split testing to exported document
 
 **Overall**
-- [ ] *Clear mesh* buttons needs to reset all data (right now not resetting selected face)
+- [x] *Clear mesh* buttons needs to reset all data (right now not resetting selected face)
 - [ ] Try added/importing other mesh structures/files
