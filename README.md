@@ -55,6 +55,9 @@ Located in [Assets/Editor](https://github.com/CBSaksager/Polygonal-Mesh-Represen
    - `RSMeshTester` for the simple, yet uncompletede, rotation system with out face implementation
 3. Use the Inspector buttons to create and manipulate meshes
 
+<details>
+<summary><h1>Abandoned or unfinished parts</h1></summary>
+<br>
 ## Abandoned or unfinished parts
 
 Some parts of the project didn't work out either because of time constraints or prioritisation of other elements.
@@ -75,3 +78,5 @@ An attempt to import PLY files without luck. For a better attempt look at the br
 
 - `PlyImporter.cs` - Utilities for importing PLY files
 - `PlyViewer.cs` - MonoBehaviour for viewing PLY files
+
+</details>
