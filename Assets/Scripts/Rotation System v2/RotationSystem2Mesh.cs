@@ -162,6 +162,10 @@ public class RSMesh
         return;
     }
 
+    /*
+    From here and down is the code for creating some simple mesh shapes.
+    */
+
     public static RSMesh CreateTetrahedron()
     {
         Stopwatch stopwatch = new Stopwatch();
