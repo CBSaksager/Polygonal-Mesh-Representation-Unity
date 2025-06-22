@@ -19,6 +19,236 @@ public class HalfEdgeMesh
         return vertex;
     }
 
+    public void AddHalfEdge(HEVertex v1, HEVertex v2, HEFace sharedFace)
+    {
+        // Verify the vertices are in the face
+        List<HEVertex> faceVerts = VerticesOfFace(sharedFace);
+        if (!faceVerts.Contains(v1) || !faceVerts.Contains(v2))
+        {
+            UnityEngine.Debug.LogError("Vertices not found on the specified face.");
+            return;
+        }
+
+        // Find the half-edges before v1 and v2 in the face loop
+        HEHalfEdge e1Prev = null; // Half-edge before v1
+        HEHalfEdge e2Prev = null; // Half-edge before v2
+
+        HEHalfEdge current = sharedFace.edge;
+        do
+        {
+            if (current.next.vertex == v1)
+            {
+                e1Prev = current;
+            }
+            if (current.next.vertex == v2)
+            {
+                e2Prev = current;
+            }
+            current = current.next;
+        } while (current != sharedFace.edge);
+
+        // Get the half-edges starting from v1 and v2
+        HEHalfEdge e1Next = e1Prev.next;  // Half-edge starting from v1
+        HEHalfEdge e2Next = e2Prev.next;  // Half-edge starting from v2
+
+        // 1. Create the new half-edges
+        HEHalfEdge he1 = new HEHalfEdge
+        {
+            vertex = v2,
+            origin = v1
+        };
+
+        HEHalfEdge he2 = new HEHalfEdge
+        {
+            vertex = v1,
+            origin = v2
+        };
+
+        // Set up twin relationship
+        he1.twin = he2;
+        he2.twin = he1;
+
+        // 2. Update the next and prev pointers
+        he1.next = e2Next;
+        e1Prev.next = he1;
+
+        he2.next = e1Next;
+        e2Prev.next = he2;
+
+        // Update prev pointers
+        he1.prev = e1Prev;
+        e2Next.prev = he1;
+
+        he2.prev = e2Prev;
+        e1Next.prev = he2;
+
+        // 3. Create new faces
+        HEFace face1 = new HEFace { edge = he1 };
+        HEFace face2 = new HEFace { edge = he2 };
+
+        // 4. Update face references for all affected half-edges
+        // For he1's loop
+        current = he1;
+        do
+        {
+            current.face = face1;
+            current = current.next;
+        } while (current != he1);
+
+        // For he2's loop
+        current = he2;
+        do
+        {
+            current.face = face2;
+            current = current.next;
+        } while (current != he2);
+
+        // 5. Update the mesh data structures
+        halfEdges.Add(he1);
+        halfEdges.Add(he2);
+        faces.Add(face1);
+        faces.Add(face2);
+        faces.Remove(sharedFace);
+
+        // 6. Register the edge in the edge map
+        int v1Index = vertices.IndexOf(v1);
+        int v2Index = vertices.IndexOf(v2);
+        edgeMap[(v1Index, v2Index)] = he1;
+        edgeMap[(v2Index, v1Index)] = he2;
+
+        return;
+    }
+
+    public void RemoveEdge(HEHalfEdge edge)
+    {
+        // 1. Verify the edge and its twin exist
+        if (edge == null || edge.twin == null)
+        {
+            UnityEngine.Debug.LogError("Cannot remove edge: edge is null or has no twin");
+            return;
+        }
+
+        HEHalfEdge twin = edge.twin;
+
+        // 2. Identify the two faces
+        HEFace face1 = edge.face;
+        HEFace face2 = twin.face;
+
+        // Check if we're working with two different faces
+        bool differentFaces = face1 != face2;
+
+        // If we're removing an edge between two different faces, we'll merge them
+        HEFace keepFace = face1; // The face we'll keep
+
+        // If either face uses the edge being removed as its reference, update it
+        if (face1.edge == edge)
+        {
+            face1.edge = edge.next != edge ? edge.next : null;
+        }
+
+        if (face2.edge == twin)
+        {
+            if (differentFaces)
+            {
+                // We're merging faces, so the twin's face will be removed
+                face2.edge = null;
+            }
+            else
+            {
+                // Single face case
+                face2.edge = twin.next != twin ? twin.next : null;
+            }
+        }
+
+        // 3. Update all half-edges in both face loops to point to the kept face
+        if (differentFaces)
+        {
+            // Update all half-edges in face2 to point to face1
+            HEHalfEdge current = twin.next;
+            while (current != twin)
+            {
+                current.face = keepFace;
+                current = current.next;
+            }
+        }
+
+        // 4. Redirect next/prev pointers to bypass the removed edges
+        // For the first half-edge
+        edge.prev.next = edge.next;
+        edge.next.prev = edge.prev;
+
+        // For the twin half-edge
+        twin.prev.next = twin.next;
+        twin.next.prev = twin.prev;
+
+        // 5. Remove the edges and update the mesh data structures
+        halfEdges.Remove(edge);
+        halfEdges.Remove(twin);
+
+        // If we merged two faces, remove the second face
+        if (differentFaces)
+        {
+            faces.Remove(face2);
+        }
+
+        // Remove from edge map
+        int v1Index = -1, v2Index = -1;
+        for (int i = 0; i < vertices.Count; i++)
+        {
+            if (vertices[i] == edge.origin) v1Index = i;
+            if (vertices[i] == twin.origin) v2Index = i;
+        }
+
+        if (v1Index >= 0 && v2Index >= 0)
+        {
+            edgeMap.Remove((v1Index, v2Index));
+            edgeMap.Remove((v2Index, v1Index));
+        }
+
+        return;
+    }
+
+    public void EdgeFlip(HEHalfEdge edge)
+    {
+        // 1. Verify the edge and its twin exist
+        if (edge == null || edge.twin == null)
+        {
+            UnityEngine.Debug.LogError("Cannot flip edge: edge is null or has no twin");
+            return;
+        }
+
+        HEHalfEdge twin = edge.twin;
+
+        // 2. Identify the two faces
+        HEFace face1 = edge.face;
+        HEFace face2 = twin.face;
+
+        // 3. Get the vertices of the edge and its twin
+        HEVertex v1 = edge.vertex;
+        HEVertex v2 = twin.vertex;
+
+        // 4. Get the corner vertices of the faces
+        HEVertex v3 = edge.next.vertex; // Next vertex in face1
+        HEVertex v4 = twin.next.vertex; // Next vertex in face2
+
+        // 5. Check degrees of vertex v1 and v2
+        // TODO
+
+        // Check if the edge (v3,v4) does not already exist
+        if (edgeMap.ContainsKey((vertices.IndexOf(v3), vertices.IndexOf(v4))) ||
+            edgeMap.ContainsKey((vertices.IndexOf(v4), vertices.IndexOf(v3))))
+        {
+            UnityEngine.Debug.LogError("Edge already exists between the vertices of the original half-edges.");
+            return;
+        }
+
+        // 4. Remove the current edge and its twin from the mesh
+        RemoveEdge(edge);
+
+        // 5. Add a new edge between the vertices of the original half-edges
+        AddHalfEdge(v3, v4, face1);
+    }
+
     public HEFace AddFace(HEVertex v0, HEVertex v1, HEVertex v2)
     {
         HEHalfEdge he0 = new HEHalfEdge { vertex = v0 };
