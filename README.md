@@ -58,7 +58,6 @@ Located in [Assets/Editor](https://github.com/CBSaksager/Polygonal-Mesh-Represen
 <details>
 <summary><h1>Abandoned or unfinished parts</h1></summary>
 <br>
-## Abandoned or unfinished parts
 
 Some parts of the project didn't work out either because of time constraints or prioritisation of other elements.
 
