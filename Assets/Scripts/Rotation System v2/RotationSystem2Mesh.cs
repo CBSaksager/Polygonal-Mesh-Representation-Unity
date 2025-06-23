@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using UnityEngine;
 
 [System.Serializable]
@@ -88,9 +89,7 @@ public class RSMesh
         }
         centroid /= face.vertices.Count;
         RSVertex newVertex = new RSVertex(centroid);
-        vertices.Add(newVertex);
-
-        // Step 2: Create new edges connecting the new vertex to each vertex of the face and maintain cyclic order
+        vertices.Add(newVertex);        // Step 2: Create new edges connecting the new vertex to each vertex of the face and maintain cyclic order
         for (int i = 0; i < face.vertices.Count; i++)
         {
             RSVertex currentVertex = face.vertices[i];
@@ -122,9 +121,15 @@ public class RSMesh
                 UnityEngine.Debug.LogWarning("Could not find edge to next vertex when splitting face");
                 currentVertex.edges.Add(newEdge);
             }
+        }
 
-            // Add the corresponding edge to the new center vertex
-            newVertex.edges.Add(new RSEdge(newVertex, currentVertex));
+        // Step 2b: Create edges from center vertex to face vertices in correct cyclic order
+        // The center vertex edges should be ordered counter-clockwise when viewed from outside
+        // This means we traverse the face vertices in reverse order
+        for (int i = face.vertices.Count - 1; i >= 0; i--)
+        {
+            RSVertex targetVertex = face.vertices[i];
+            newVertex.edges.Add(new RSEdge(newVertex, targetVertex));
         }
 
         // Step 3: Create new triangular faces
@@ -157,7 +162,7 @@ public class RSMesh
         faces.Remove(face);
 
         stopwatch.Stop();
-        UnityEngine.Debug.Log($"Rotation System Face Split completed in {stopwatch.Elapsed.TotalMilliseconds:F4} ms");
+        File.AppendAllText("Assets/Tests/RSFaceSplit.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
 
         return;
     }

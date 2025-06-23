@@ -79,49 +79,48 @@ public class HalfEdgeMesh
         } while (edge != firstEdge);
         return vertices;
     }
-
     public void SplitFace(HEFace face)
     {
         Stopwatch stopwatch = new Stopwatch();
         stopwatch.Start();
 
         if (face == null) return;
-        List<HEVertex> vertices = VerticesOfFace(face);
-        if (vertices == null || vertices.Count < 3) return; // Ensure we have at least 3 vertices
 
-        // Step 1: Create the new center vertex at the face centroid
-        Vector3 center = Vector3.zero;
-        foreach (var vertex in vertices)
-        {
-            center += vertex.position;
-        }
-        center /= vertices.Count;
-        HEVertex centerVertex = AddVertex(center);
-
-        // Step 2: Save the original edges before we modify the structure
+        // Step 1: Calculate centroid and count vertices
         HEHalfEdge currentEdge = face.edge;
-        List<HEHalfEdge> originalEdges = new List<HEHalfEdge>();
+        Vector3 center = Vector3.zero;
+        int vertexCount = 0;
+
         do
         {
-            originalEdges.Add(currentEdge);
+            center += currentEdge.vertex.position;
+            vertexCount++;
             currentEdge = currentEdge.next;
         } while (currentEdge != face.edge);
 
-        // Step 3: Create new triangular faces connecting each original edge to the center vertex
-        for (int i = 0; i < originalEdges.Count; i++)
+        if (vertexCount < 3) return; // Ensure we have at least 3 vertices
+
+        center /= vertexCount;
+        HEVertex centerVertex = AddVertex(center);
+
+        // Step 2: Remove the original face first (before creating new ones)
+        faces.Remove(face);
+
+        // Step 3: Create triangular faces in a single traversal
+        currentEdge = face.edge;
+        do
         {
-            HEVertex v1 = originalEdges[i].vertex;
-            HEVertex v2 = originalEdges[i].next.vertex;
+            HEVertex v1 = currentEdge.vertex;
+            HEVertex v2 = currentEdge.next.vertex;
 
             // Create a new triangular face (maintaining proper orientation)
             AddFace(centerVertex, v1, v2);
-        }
 
-        // Step 4: Remove the original face from the mesh
-        faces.Remove(face);
+            currentEdge = currentEdge.next;
+        } while (currentEdge != face.edge);
 
         stopwatch.Stop();
-        File.AppendAllText("Assets/Tests/HEFaceSplitNona.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
+        File.AppendAllText("Assets/Tests/HEFaceSplit.txt", $"{stopwatch.Elapsed.TotalMilliseconds:F4} \n");
 
     }
 
