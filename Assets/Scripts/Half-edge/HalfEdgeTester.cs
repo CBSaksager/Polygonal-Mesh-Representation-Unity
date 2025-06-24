@@ -15,11 +15,13 @@ public class HalfEdgeTester : MonoBehaviour
 {
     private HalfEdgeMesh hem;
     private HEFace selectedFace;
+    private HEHalfEdge selectedEdge;
 
     public void ClearMesh()
     {
         hem = null;
         selectedFace = null;
+        selectedEdge = null;
 
         var meshFilter = GetComponent<MeshFilter>();
         if (meshFilter != null)
@@ -47,6 +49,24 @@ public class HalfEdgeTester : MonoBehaviour
         }
     }
 
+    public void SelectRandomEdge()
+    {
+        if (hem == null || hem.halfEdges == null || hem.halfEdges.Count == 0)
+        {
+            UnityEngine.Debug.LogWarning("No edges available to select.");
+            selectedEdge = null;
+            return;
+        }
+
+        int randomIndex = UnityEngine.Random.Range(0, hem.halfEdges.Count);
+        selectedEdge = hem.halfEdges[randomIndex]; // This was missing!
+
+        if (selectedEdge != null)
+        {
+            UnityEngine.Debug.Log($"Selected Edge: {hem.EdgeToString(selectedEdge)}");
+        }
+    }
+
     public void SplitFace()
     {
         if (hem == null || selectedFace == null)
@@ -58,10 +78,27 @@ public class HalfEdgeTester : MonoBehaviour
         hem.SplitFace(selectedFace);
     }
 
+    public void EdgeFlip()
+    {
+        if (hem == null || selectedEdge == null)
+        {
+            UnityEngine.Debug.LogWarning("No edge selected or mesh is null.");
+            return;
+        }
+
+        hem.EdgeFlip(selectedEdge);
+    }
+
     public void CreateTetrahedron()
     {
         selectedFace = null;
         hem = HalfEdgeMesh.CreateTetrahedron();
+    }
+
+    public void CreateCube()
+    {
+        selectedFace = null;
+        hem = HalfEdgeMesh.CreateCube();
     }
 
     public void CreateQuad()
@@ -112,11 +149,12 @@ public class HalfEdgeTester : MonoBehaviour
             if (he == null || he.origin == null || he.next?.origin == null)
                 continue;
 
-            // Check if this edge belongs to the selected face
+            // Check if this edge belongs to the selected face or is the selected edge
             bool isSelectedFaceEdge = (selectedFace != null && he.face == selectedFace);
+            bool isSelectedEdge = (selectedEdge != null && (he == selectedEdge || he == selectedEdge.twin));
 
             // Skip highlighted edges in this pass
-            if (isSelectedFaceEdge)
+            if (isSelectedFaceEdge || isSelectedEdge)
                 continue;
 
             Handles.color = Color.black;
@@ -164,6 +202,43 @@ public class HalfEdgeTester : MonoBehaviour
 
                 currentEdge = currentEdge.next;
             } while (currentEdge != null && currentEdge != startEdge);
+        }
+
+        // Third pass: Draw selected edge in red
+        if (selectedEdge != null)
+        {
+            Handles.color = Color.red;
+
+            if (selectedEdge.origin != null && selectedEdge.vertex != null)
+            {
+                Vector3 from = transform.TransformPoint(selectedEdge.origin.position);
+                Vector3 to = transform.TransformPoint(selectedEdge.vertex.position);
+                Vector3 mid = (from + to) * 0.5f;
+                Vector3 dir = (to - from).normalized;
+
+                // Draw the edge line with increased thickness
+                Handles.DrawAAPolyLine(3f, from, to);
+
+                // Draw arrow head
+                float arrowSize = 0.12f;
+                Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
+            }
+
+            // Also draw the twin edge if it exists
+            if (selectedEdge.twin != null && selectedEdge.twin.origin != null && selectedEdge.twin.vertex != null)
+            {
+                Vector3 from = transform.TransformPoint(selectedEdge.twin.origin.position);
+                Vector3 to = transform.TransformPoint(selectedEdge.twin.vertex.position);
+                Vector3 mid = (from + to) * 0.5f;
+                Vector3 dir = (to - from).normalized;
+
+                // Draw the twin edge line
+                Handles.DrawAAPolyLine(3f, from, to);
+
+                // Draw arrow head
+                float arrowSize = 0.12f;
+                Handles.ArrowHandleCap(0, mid, Quaternion.LookRotation(dir), arrowSize, EventType.Repaint);
+            }
         }
     }
 #endif

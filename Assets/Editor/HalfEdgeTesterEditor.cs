@@ -31,6 +31,11 @@ public class HalfEdgeTesterEditor : Editor
             tester.SelectRandomFace();
         }
 
+        if (GUILayout.Button("Select Random Edge"))
+        {
+            tester.SelectRandomEdge();
+        }
+
         if (GUILayout.Button("Create Tetrahedron"))
         {
             Stopwatch stopwatch = new Stopwatch(); // TODO Remove this and place it in the mesh class where the function is defined
@@ -42,35 +47,52 @@ public class HalfEdgeTesterEditor : Editor
             UnityEngine.Debug.Log($"Tetrahedron created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
         }
 
-        if (GUILayout.Button("Create Quad"))
+        if (GUILayout.Button("Create Cube"))
         {
-            tester.CreateQuad();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            tester.CreateCube();
+
+            stopwatch.Stop();
+            UnityEngine.Debug.Log($"Cube created in {stopwatch.Elapsed.TotalMilliseconds:F4} ms.");
         }
 
-        if (GUILayout.Button("Create Penta"))
+        if (GUILayout.Button("Edge Flip"))
         {
-            tester.CreatePentagon();
+            tester.SelectRandomEdge();
+            tester.EdgeFlip();
         }
 
-        if (GUILayout.Button("Create Hexa"))
-        {
-            tester.CreateHexagon();
-        }
+        // if (GUILayout.Button("Create Quad"))
+        // {
+        //     tester.CreateQuad();
+        // }
 
-        if (GUILayout.Button("Create Septa"))
-        {
-            tester.CreateSeptagon();
-        }
+        // if (GUILayout.Button("Create Penta"))
+        // {
+        //     tester.CreatePentagon();
+        // }
 
-        if (GUILayout.Button("Create Octa"))
-        {
-            tester.CreateOctagon();
-        }
+        // if (GUILayout.Button("Create Hexa"))
+        // {
+        //     tester.CreateHexagon();
+        // }
 
-        if (GUILayout.Button("Create  Nona"))
-        {
-            tester.CreateNonagon();
-        }
+        // if (GUILayout.Button("Create Septa"))
+        // {
+        //     tester.CreateSeptagon();
+        // }
+
+        // if (GUILayout.Button("Create Octa"))
+        // {
+        //     tester.CreateOctagon();
+        // }
+
+        // if (GUILayout.Button("Create  Nona"))
+        // {
+        //     tester.CreateNonagon();
+        // }
 
         if (GUILayout.Button("Face Split"))
         {

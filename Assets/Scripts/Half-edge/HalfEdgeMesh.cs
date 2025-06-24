@@ -119,13 +119,13 @@ public class HalfEdgeMesh
         return;
     }
 
-    public void RemoveEdge(HEHalfEdge edge)
+    public HEFace RemoveEdge(HEHalfEdge edge)
     {
         // 1. Verify the edge and its twin exist
         if (edge == null || edge.twin == null)
         {
             UnityEngine.Debug.LogError("Cannot remove edge: edge is null or has no twin");
-            return;
+            return null;
         }
 
         HEHalfEdge twin = edge.twin;
@@ -205,7 +205,7 @@ public class HalfEdgeMesh
             edgeMap.Remove((v2Index, v1Index));
         }
 
-        return;
+        return keepFace; // Return the kept face
     }
 
     public void EdgeFlip(HEHalfEdge edge)
@@ -235,18 +235,24 @@ public class HalfEdgeMesh
         // TODO
 
         // Check if the edge (v3,v4) does not already exist
-        if (edgeMap.ContainsKey((vertices.IndexOf(v3), vertices.IndexOf(v4))) ||
-            edgeMap.ContainsKey((vertices.IndexOf(v4), vertices.IndexOf(v3))))
+        // if (edgeMap.ContainsKey((vertices.IndexOf(v3), vertices.IndexOf(v4))) ||
+        //     edgeMap.ContainsKey((vertices.IndexOf(v4), vertices.IndexOf(v3))))
+        // {
+        //     UnityEngine.Debug.LogError("Edge already exists between the vertices of the original half-edges.");
+        //     return;
+        // }
+
+        // 4. Remove the current edge and its twin from the mesh and get the resulting face
+        HEFace resultingFace = RemoveEdge(edge);
+
+        if (resultingFace == null)
         {
-            UnityEngine.Debug.LogError("Edge already exists between the vertices of the original half-edges.");
+            UnityEngine.Debug.LogError("Failed to get valid face after edge removal");
             return;
         }
 
-        // 4. Remove the current edge and its twin from the mesh
-        RemoveEdge(edge);
-
-        // 5. Add a new edge between the vertices of the original half-edges
-        AddHalfEdge(v3, v4, face1);
+        // 5. Add a new edge between the opposite corners using the resulting face
+        AddHalfEdge(v3, v4, resultingFace);
     }
 
     public HEFace AddFace(HEVertex v0, HEVertex v1, HEVertex v2)
@@ -259,6 +265,11 @@ public class HalfEdgeMesh
         he0.next = he1;
         he1.next = he2;
         he2.next = he0;
+
+        // Set prev relationships
+        he0.prev = he2;
+        he1.prev = he0;
+        he2.prev = he1;
 
         // Set origin vertices (needed for drawing)
         he0.origin = v1;
@@ -497,6 +508,51 @@ public class HalfEdgeMesh
         return hem;
     }
 
+    public static HalfEdgeMesh CreateCube()
+    {
+        var hem = new HalfEdgeMesh();
+
+        // Define 8 vertices of a cube
+        var v0 = new HEVertex(new Vector3(-1, -1, -1)); // Bottom back left
+        var v1 = new HEVertex(new Vector3(1, -1, -1));  // Bottom back right
+        var v2 = new HEVertex(new Vector3(1, -1, 1));   // Bottom front right
+        var v3 = new HEVertex(new Vector3(-1, -1, 1));  // Bottom front left
+        var v4 = new HEVertex(new Vector3(-1, 1, -1));  // Top back left
+        var v5 = new HEVertex(new Vector3(1, 1, -1));   // Top back right
+        var v6 = new HEVertex(new Vector3(1, 1, 1));    // Top front right
+        var v7 = new HEVertex(new Vector3(-1, 1, 1));   // Top front left
+
+        hem.vertices.AddRange(new[] { v0, v1, v2, v3, v4, v5, v6, v7 });
+
+        // Create 12 triangular faces (2 for each side of the cube)
+
+        // Bottom face
+        hem.AddFace(v0, v2, v1);
+        hem.AddFace(v0, v3, v2);
+
+        // Top face
+        hem.AddFace(v4, v5, v6);
+        hem.AddFace(v4, v6, v7);
+
+        // Front face
+        hem.AddFace(v3, v7, v6);
+        hem.AddFace(v3, v6, v2);
+
+        // Back face
+        hem.AddFace(v0, v1, v5);
+        hem.AddFace(v0, v5, v4);
+
+        // Left face
+        hem.AddFace(v0, v4, v7);
+        hem.AddFace(v0, v7, v3);
+
+        // Right face
+        hem.AddFace(v1, v2, v6);
+        hem.AddFace(v1, v6, v5);
+
+        return hem;
+    }
+
     public static HalfEdgeMesh CreateQuad()
     {
         var hem = new HalfEdgeMesh();
@@ -520,6 +576,12 @@ public class HalfEdgeMesh
         he1.next = he2;
         he2.next = he3;
         he3.next = he0;
+
+        // Set prev relationships
+        he0.prev = he3;
+        he1.prev = he0;
+        he2.prev = he1;
+        he3.prev = he2;
 
         // Set origin vertices for each half-edge
         he0.origin = v0;
@@ -583,12 +645,19 @@ public class HalfEdgeMesh
         he3.next = he4;
         he4.next = he0;
 
+        // Set prev relationships
+        he0.prev = he4;
+        he1.prev = he0;
+        he2.prev = he1;
+        he3.prev = he2;
+        he4.prev = he3;
+
         // Set origin vertices for each half-edge
-        he0.origin = v0;
-        he1.origin = v1;
-        he2.origin = v2;
-        he3.origin = v3;
-        he4.origin = v4;
+        he0.origin = v1;
+        he1.origin = v2;
+        he2.origin = v3;
+        he3.origin = v4;
+        he4.origin = v0;
 
         // Create face and link it
         HEFace face = new HEFace { edge = he0 };
@@ -652,13 +721,21 @@ public class HalfEdgeMesh
         he4.next = he5;
         he5.next = he0;
 
+        // Set prev relationships
+        he0.prev = he5;
+        he1.prev = he0;
+        he2.prev = he1;
+        he3.prev = he2;
+        he4.prev = he3;
+        he5.prev = he4;
+
         // Set origin vertices for each half-edge
-        he0.origin = v0;
-        he1.origin = v1;
-        he2.origin = v2;
-        he3.origin = v3;
-        he4.origin = v4;
-        he5.origin = v5;
+        he0.origin = v1;
+        he1.origin = v2;
+        he2.origin = v3;
+        he3.origin = v4;
+        he4.origin = v5;
+        he5.origin = v0;
 
         // Create face and link it
         HEFace face = new HEFace { edge = he0 };
@@ -728,14 +805,23 @@ public class HalfEdgeMesh
         he5.next = he6;
         he6.next = he0;
 
+        // Set prev relationships
+        he0.prev = he6;
+        he1.prev = he0;
+        he2.prev = he1;
+        he3.prev = he2;
+        he4.prev = he3;
+        he5.prev = he4;
+        he6.prev = he5;
+
         // Set origin vertices for each half-edge
-        he0.origin = v0;
-        he1.origin = v1;
-        he2.origin = v2;
-        he3.origin = v3;
-        he4.origin = v4;
-        he5.origin = v5;
-        he6.origin = v6;
+        he0.origin = v1;
+        he1.origin = v2;
+        he2.origin = v3;
+        he3.origin = v4;
+        he4.origin = v5;
+        he5.origin = v6;
+        he6.origin = v0;
 
         // Create face and link it
         HEFace face = new HEFace { edge = he0 };
@@ -811,15 +897,25 @@ public class HalfEdgeMesh
         he6.next = he7;
         he7.next = he0;
 
+        // Set prev relationships
+        he0.prev = he7;
+        he1.prev = he0;
+        he2.prev = he1;
+        he3.prev = he2;
+        he4.prev = he3;
+        he5.prev = he4;
+        he6.prev = he5;
+        he7.prev = he6;
+
         // Set origin vertices for each half-edge
-        he0.origin = v0;
-        he1.origin = v1;
-        he2.origin = v2;
-        he3.origin = v3;
-        he4.origin = v4;
-        he5.origin = v5;
-        he6.origin = v6;
-        he7.origin = v7;
+        he0.origin = v1;
+        he1.origin = v2;
+        he2.origin = v3;
+        he3.origin = v4;
+        he4.origin = v5;
+        he5.origin = v6;
+        he6.origin = v7;
+        he7.origin = v0;
 
         // Create face and link it
         HEFace face = new HEFace { edge = he0 };
@@ -901,16 +997,27 @@ public class HalfEdgeMesh
         he7.next = he8;
         he8.next = he0;
 
+        // Set prev relationships
+        he0.prev = he8;
+        he1.prev = he0;
+        he2.prev = he1;
+        he3.prev = he2;
+        he4.prev = he3;
+        he5.prev = he4;
+        he6.prev = he5;
+        he7.prev = he6;
+        he8.prev = he7;
+
         // Set origin vertices for each half-edge
-        he0.origin = v0;
-        he1.origin = v1;
-        he2.origin = v2;
-        he3.origin = v3;
-        he4.origin = v4;
-        he5.origin = v5;
-        he6.origin = v6;
-        he7.origin = v7;
-        he8.origin = v8;
+        he0.origin = v1;
+        he1.origin = v2;
+        he2.origin = v3;
+        he3.origin = v4;
+        he4.origin = v5;
+        he5.origin = v6;
+        he6.origin = v7;
+        he7.origin = v8;
+        he8.origin = v0;
 
         // Create face and link it
         HEFace face = new HEFace { edge = he0 };
